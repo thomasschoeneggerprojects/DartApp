@@ -1,0 +1,33 @@
+@* Big one-tap buttons for target games, with an optional full keypad for exact entry. *@
+@if (!fullPad)
+{
+  <div class="target-pad cols-@(Multipliers.Length + 1)">
+    @foreach (var m in Multipliers)
+    {
+      var mult = m;
+      <button class="target-btn m@(mult)" disabled="@Disabled" @onclick="() => OnThrow.InvokeAsync(new DartHit(Target.Segment!.Value, mult))">
+        <span class="tb-main">@Short(mult)</span><small>@Long(mult)</small>
+      </button>
+    }
+    <button class="target-btn miss" disabled="@Disabled" @onclick="() => OnThrow.InvokeAsync(DartHit.Miss)">
+      <span class="tb-main">✕</span><small>@MissLabel</small>
+    </button>
+  </div>
+}
+else
+{
+  <DartPad OnThrow="OnThrow" Disabled="Disabled" Highlight="TargetSet" />
+}
+<button class="link-btn" @onclick="() => fullPad = !fullPad">@(fullPad ? "← Quick target buttons" : "Enter exact dart (any segment) →")</button>
+@code {
+  [Parameter, EditorRequired] public TargetInfo Target { get; set; } = default!;
+  [Parameter] public EventCallback<DartHit> OnThrow { get; set; }
+  [Parameter] public int[] Multipliers { get; set; } = [1, 2, 3];
+  [Parameter] public string MissLabel { get; set; } = "Miss";
+  [Parameter] public bool Disabled { get; set; }
+  private bool fullPad;
+  private ISet<int>? TargetSet => Target.Segment is int seg ? new HashSet<int> { seg } : null;
+
+  private string Short(int m) => Target.Segment == 25 ? (m == 2 ? "BULL" : "25") : $"{(m == 3 ? "T" : m == 2 ? "D" : "S")}{Target.Segment}";
+  private string Long(int m) => Target.Segment == 25 ? (m == 2 ? "Bullseye · 50" : "Outer bull · 25") : $"{(m == 3 ? "Triple" : m == 2 ? "Double" : "Single")} · {Target.Segment * m}";
+}

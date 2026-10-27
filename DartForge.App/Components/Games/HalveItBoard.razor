@@ -1,0 +1,54 @@
+@inherits GameBoardBase
+@{
+  var target = GameRules.HalveItTarget(Snap.Round);
+  var cols = $"92px repeat({Snap.Players.Count}, minmax(0,1fr))";
+}
+<div class="scorecards">
+  @for (int i = 0; i < Snap.Players.Count; i++)
+  {
+    var p = Snap.Players[i];
+    <div class="score-card @(IsActive(i) ? "active" : "")">
+      <div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong>
+      <div class="huge">@p.Score</div>
+      <div class="mini">HALVED @HalvedCount(p)× · ROUND @Math.Min(Snap.Round, TotalRounds) / @TotalRounds</div>
+    </div>
+  }
+</div>
+<article class="panel round-table">
+  <div class="rt-row rt-head" style="grid-template-columns:@cols"><span>TARGET</span>@foreach (var p in Snap.Players) { <span>@p.Name</span> }</div>
+  @for (int r = 1; r <= TotalRounds; r++)
+  {
+    var round = r;
+    var t = GameRules.HalveItTarget(round);
+    <div class="rt-row @(round == Snap.Round && !Snap.IsFinished ? "current" : round > Snap.Round ? "future" : "")" style="grid-template-columns:@cols">
+      <span class="rt-target">@t.Label</span>
+      @foreach (var p in Snap.Players)
+      {
+        var v = VisitOf(p.Id, round);
+        var halved = v is not null && !v.Darts.Any(t.Matches);
+        <span class="@(halved ? "halved" : v is not null ? "plus" : "")">@(v is null ? "" : halved ? "½" : Signed(v.Score))</span>
+      }
+    </div>
+  }
+</article>
+@if (CanInput)
+{
+  <article class="panel">
+    <div class="section-heading"><h2>@Active.Name — @target.Label</h2><div class="pill">@DartsLeft darts left</div></div>
+    <p class="pad-hint warn">Miss the target with all three darts and your @Active.Score points are halved.</p>
+    <VisitDarts Darts="PendingDarts" Good="target.Matches" />
+    @if (target.Segment is not null)
+    {
+      <TargetPad Target="target" OnThrow="OnThrow" Multipliers="@(target.Segment == 25 ? BullMults : AllMults)" />
+    }
+    else
+    {
+      <DartPad OnThrow="OnThrow" FixedMultiplier="target.Multiplier" />
+    }
+  </article>
+}
+@code {
+  private static readonly int[] BullMults = [1, 2];
+  private static readonly int[] AllMults = [1, 2, 3];
+  private int HalvedCount(PlayerSnapshot p) => VisitsOf(p.Id).Count(v => !v.Darts.Any(GameRules.HalveItTarget(v.Round).Matches));
+}

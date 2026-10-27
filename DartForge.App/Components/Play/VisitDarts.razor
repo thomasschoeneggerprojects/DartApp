@@ -1,0 +1,20 @@
+@* The three dart slots of the current visit. *@
+<div class="visit-darts">
+  @for (int i = 0; i < 3; i++)
+  {
+    if (i < Darts.Count)
+    {
+      var d = Darts[i];
+      <span class="dart-slot filled @(Good?.Invoke(d) == true ? "good" : d.Segment == 0 || Good is not null ? "bad" : "")">@d.Label</span>
+    }
+    else
+    {
+      <span class="dart-slot">Dart @(i + 1)</span>
+    }
+  }
+</div>
+@code {
+  [Parameter, EditorRequired] public IReadOnlyList<DartHit> Darts { get; set; } = Array.Empty<DartHit>();
+  /// <summary>Optional: marks darts that count for the current target.</summary>
+  [Parameter] public Func<DartHit, bool>? Good { get; set; }
+}

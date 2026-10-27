@@ -1,0 +1,94 @@
+@inherits GameBoardBase
+@{
+  var two = Snap.Players.Count == 2;
+  var cols = two ? "minmax(0,1fr) 76px minmax(0,1fr)" : $"72px repeat({Snap.Players.Count}, minmax(0,1fr))";
+  var scoring = Snap.Settings.Kind != GameKind.NoScoreCricket;
+}
+<div class="cricket-board" style="grid-template-columns:@cols">
+  @* Header row *@
+  @if (two)
+  {
+    @PlayerHeader(0)
+    <div class="cb-corner">@(Snap.Settings.Kind == GameKind.CutThroatCricket ? "LOW WINS" : scoring ? "PTS" : "RACE")</div>
+    @PlayerHeader(1)
+  }
+  else
+  {
+    <div class="cb-corner">@(Snap.Settings.Kind == GameKind.CutThroatCricket ? "LOW WINS" : scoring ? "PTS" : "RACE")</div>
+    for (int i = 0; i < Snap.Players.Count; i++) { @PlayerHeader(i) }
+  }
+  @* One row per cricket number *@
+  @foreach (var n in GameRules.CricketNumbers)
+  {
+    var number = n;
+    var dead = Snap.Players.All(p => p.MarksOn(number) >= 3);
+    if (two)
+    {
+      @MarkCell(0, number, dead)
+      @NumberCell(number, dead)
+      @MarkCell(1, number, dead)
+    }
+    else
+    {
+      @NumberCell(number, dead)
+      for (int i = 0; i < Snap.Players.Count; i++) { @MarkCell(i, number, dead) }
+    }
+  }
+</div>
+@if (CanInput)
+{
+  <article class="panel">
+    <div class="section-heading"><h2>@Active.Name to throw</h2><div class="pill">@DartsLeft darts left</div></div>
+    <VisitDarts Darts="PendingDarts" Good="IsCricketHit" />
+    <div class="multiplier">
+      <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">SINGLE</button>
+      <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">DOUBLE</button>
+      <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">TRIPLE</button>
+    </div>
+    <p class="pad-hint">Tap a number on the board above — or:</p>
+    <div class="quick-row"><button class="miss-btn" @onclick="() => Fire(0)">MISS / OTHER NUMBER</button></div>
+  </article>
+}
+@code {
+  private int multiplier = 1;
+
+  private static bool IsCricketHit(DartHit d) => d.Segment is >= 15 and <= 20 or 25;
+
+  private async Task Fire(int segment)
+  {
+    if (!CanInput) return;
+    var hit = segment == 0 ? DartHit.Miss : new DartHit(segment, segment == 25 ? Math.Min(2, multiplier) : multiplier);
+    multiplier = 1;
+    await Throw(hit);
+  }
+
+  private string Mpr(PlayerSnapshot p)
+  {
+    var visits = VisitsOf(p.Id).ToList();
+    if (visits.Count == 0) return "0.00";
+    var marks = visits.SelectMany(v => v.Darts).Where(IsCricketHit).Sum(d => d.Multiplier);
+    return (marks / (double)visits.Count).ToString("F2");
+  }
+
+  private RenderFragment PlayerHeader(int i) => __builder =>
+  {
+    var p = Snap.Players[i];
+    <div class="cb-player @(IsActive(i) ? "active" : "") @(Snap.WinnerId == p.Id ? "winner" : "")">
+      <div class="eyebrow">@Role(p, i)</div>
+      <strong>@p.Name</strong>
+      @if (Snap.Settings.Kind != GameKind.NoScoreCricket) { <div class="cb-points">@p.Score</div> }
+      else { <div class="cb-points">@(GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3))/7</div> }
+      <div class="mini">MPR @Mpr(p)</div>
+    </div>
+  };
+
+  private RenderFragment MarkCell(int i, int number, bool dead) => __builder =>
+  {
+    <div class="cb-marks @(IsActive(i) ? "active" : "") @(dead ? "dead" : "")"><CricketMark Count="Snap.Players[i].MarksOn(number)" /></div>
+  };
+
+  private RenderFragment NumberCell(int number, bool dead) => __builder =>
+  {
+    <button class="cb-number @(dead ? "dead" : "")" disabled="@(!CanInput)" @onclick="() => Fire(number)">@(number == 25 ? "BULL" : number.ToString())</button>
+  };
+}

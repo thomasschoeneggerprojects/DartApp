@@ -6,6 +6,8 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - .NET 8 MAUI Android + Blazor Hybrid project and responsive dark UI
 - Independent scoring engine for X01, Cricket variants, Around the Clock, Shanghai, Count Up, High Score, Halve It, Bob's 27 (some simplified; see below)
 - Individual dart entry, automatic turn change, undo/redo, game setup, basic bot
+- Game-specific match views (`Components/Games`): X01 (checkout suggestions, double/master in), Cricket / Cut Throat / No Score (marks board, tap-a-number input, MPR), Around the Clock (progress track), Shanghai (round table + S/D/T Shanghai meter), Halve It (target table with halving), Bob's 27 (doubles ladder, elimination), Count Up (race to target) and High Score (fixed rounds)
+- Opponent choice: DartBot (auto-throws, aims per game), second local player, or solo; rematch button
 - Local SQLite completed-match and training history
 - Simple target-hit training, lightweight offline challenges and statistics
 - No advertising SDK, no networking, optional visual footer placeholder
@@ -13,7 +15,7 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 
 ## Not complete / known limitations
 - **Not all requested games**: Killer, Baseball, Golf, 21, Scram, Gotcha, etc. are not yet implemented.
-- Cricket and alternative modes need extensive variant-specific and multiplayer tests; scoring rules are currently simplified.
+- Rule variants (e.g. Around the Clock with bull finish, Halve It sequences) are fixed to one common ruleset each.
 - No robust local match autosave or process-death resume.
 - No full-leg/sets match format configuration UI or local multiplayer beyond human vs bot.
 - DartBot is rudimentary and does not model a physics-accurate dartboard or calibrate realistic averages.

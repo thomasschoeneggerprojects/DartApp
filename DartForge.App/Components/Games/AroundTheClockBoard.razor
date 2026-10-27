@@ -1,0 +1,33 @@
+@inherits GameBoardBase
+<div class="atc-list">
+  @for (int i = 0; i < Snap.Players.Count; i++)
+  {
+    var p = Snap.Players[i];
+    var next = Math.Min(20, p.Score + 1);
+    <div class="score-card atc-card @(IsActive(i) ? "active" : "")">
+      <div class="atc-head">
+        <div><div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong></div>
+        <div class="atc-next"><small>@(p.Score >= 20 ? "DONE" : "NEXT")</small><span>@(p.Score >= 20 ? "✓" : next.ToString())</span></div>
+      </div>
+      <div class="atc-track">
+        @for (int n = 1; n <= 20; n++)
+        {
+          <span class="atc-cell @(n <= p.Score ? "hit" : n == next && p.Score < 20 ? "current" : "")">@n</span>
+        }
+      </div>
+      <div class="mini">@p.Score / 20 · DARTS @p.DartsThrown · HIT RATE @(p.DartsThrown == 0 ? "0" : (100.0 * HitsOf(p) / p.DartsThrown).ToString("F0"))%</div>
+    </div>
+  }
+</div>
+<div class="rule-strip">Round @Math.Min(Snap.Round, TotalRounds) of max. @TotalRounds · Any single, double or triple of the number counts</div>
+@if (CanInput && Game.CurrentTarget is { } target)
+{
+  <article class="panel">
+    <div class="section-heading"><h2>@Active.Name — hit the @target.Label</h2><div class="pill">@DartsLeft darts left</div></div>
+    <VisitDarts Darts="PendingDarts" />
+    <TargetPad Target="target" OnThrow="OnThrow" />
+  </article>
+}
+@code {
+  private int HitsOf(PlayerSnapshot p) => p.Score;
+}

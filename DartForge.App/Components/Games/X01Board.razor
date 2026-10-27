@@ -1,0 +1,37 @@
+@inherits GameBoardBase
+<div class="scorecards">
+  @for (int i = 0; i < Snap.Players.Count; i++)
+  {
+    var p = Snap.Players[i];
+    var route = IsActive(i) && p.Opened ? Checkout.Suggest(p.Score, DartsLeft, Snap.Settings.Out) : (!IsActive(i) && p.Opened ? Checkout.Suggest(p.Score, 3, Snap.Settings.Out) : null);
+    var last = VisitsOf(p.Id).LastOrDefault();
+    <div class="score-card @(IsActive(i) ? "active" : "")">
+      <div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong>
+      <div class="huge">@p.Score</div>
+      <div class="mini">AVG @Avg(p) · DARTS @p.DartsThrown</div>
+      <div class="mini">LAST @(last is null ? "–" : last.Bust ? "BUST" : last.Score.ToString()) @(Snap.Settings.LegsToWin > 1 || Snap.Settings.SetsToWin > 1 ? $"· LEGS {p.Legs} · SETS {p.Sets}" : "")</div>
+      @if (!p.Opened) { <div class="tag warn">@(Snap.Settings.In == InRule.Double ? "DOUBLE IN" : "MASTER IN") NEEDED</div> }
+      else if (route is not null) { <div class="checkout">@(string.Join("  ", route.Select(d => d.Label)))</div> }
+    </div>
+  }
+</div>
+<div class="rule-strip">@Snap.Settings.StartScore · @(Snap.Settings.In == InRule.Straight ? "Straight in" : Snap.Settings.In + " in") · @(Snap.Settings.Out == OutRule.Straight ? "Straight out" : Snap.Settings.Out + " out")</div>
+@if (CanInput)
+{
+  <article class="panel">
+    <div class="section-heading"><h2>@Active.Name — @Active.Score left</h2><div class="pill">@DartsLeft darts left</div></div>
+    <VisitDarts Darts="PendingDarts" />
+    <DartPad OnThrow="OnThrow" Highlight="CheckoutTargets" />
+  </article>
+}
+@code {
+  private ISet<int>? CheckoutTargets
+  {
+    get
+    {
+      if (!Active.Opened) return null;
+      var route = Checkout.Suggest(Active.Score, DartsLeft, Snap.Settings.Out);
+      return route is null ? null : new HashSet<int>(route.Take(1).Select(d => d.Segment));
+    }
+  }
+}

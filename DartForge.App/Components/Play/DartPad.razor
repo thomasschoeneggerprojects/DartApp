@@ -1,0 +1,40 @@
+@* Full keypad: multiplier + 1-20 + 25/Bull + Miss. *@
+@if (FixedMultiplier is null)
+{
+  <div class="multiplier">
+    <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">SINGLE</button>
+    <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">DOUBLE</button>
+    <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">TRIPLE</button>
+  </div>
+}
+else
+{
+  <div class="pad-hint">@(FixedMultiplier == 2 ? "Doubles only — tap the number you hit" : "Triples only — tap the number you hit")</div>
+}
+<div class="number-grid">
+  @for (int n = 1; n <= 20; n++)
+  {
+    var number = n;
+    <button class="@(Highlight?.Contains(number) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(number)">@number</button>
+  }
+</div>
+<div class="quick-row">
+  @if (Mult != 3 && FixedMultiplier != 2) { <button class="@(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 1)">25</button> }
+  @if (Mult != 3) { <button class="@(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 2)">BULL</button> }
+  <button class="miss-btn" disabled="@Disabled" @onclick="() => Fire(0)">MISS</button>
+</div>
+@code {
+  [Parameter] public EventCallback<DartHit> OnThrow { get; set; }
+  [Parameter] public int? FixedMultiplier { get; set; }
+  [Parameter] public ISet<int>? Highlight { get; set; }
+  [Parameter] public bool Disabled { get; set; }
+  private int multiplier = 1;
+  private int Mult => FixedMultiplier ?? multiplier;
+
+  private async Task Fire(int segment, int? forced = null)
+  {
+    var hit = segment == 0 ? DartHit.Miss : new DartHit(segment, forced ?? Mult);
+    multiplier = 1;
+    await OnThrow.InvokeAsync(hit);
+  }
+}

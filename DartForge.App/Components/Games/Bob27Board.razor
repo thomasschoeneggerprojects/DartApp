@@ -1,0 +1,42 @@
+@inherits GameBoardBase
+@{
+  var target = GameRules.Bob27Target(Snap.Round);
+  var value = GameRules.Bob27Value(Snap.Round);
+}
+<div class="round-banner">
+  <div><div class="eyebrow">ROUND @Math.Min(Snap.Round, TotalRounds) / @TotalRounds</div><div class="rb-label">Hit each: +@value · Miss all: −@value</div></div>
+  <div class="rb-target">@target.Label</div>
+</div>
+<div class="atc-list">
+  @for (int i = 0; i < Snap.Players.Count; i++)
+  {
+    var p = Snap.Players[i];
+    <div class="score-card atc-card @(IsActive(i) ? "active" : "") @(p.Eliminated ? "out" : "")">
+      <div class="atc-head">
+        <div><div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong></div>
+        <div class="bob-score @(p.Score <= 0 ? "neg" : "")">@p.Score @if (p.Eliminated) { <small>OUT</small> }</div>
+      </div>
+      <div class="bob-ladder">
+        @for (int r = 1; r <= TotalRounds; r++)
+        {
+          var v = VisitOf(p.Id, r);
+          var label = r >= GameRules.Bob27Rounds ? "B" : r.ToString();
+          <span class="@(v is null ? (r == Snap.Round && IsActive(i) ? "current" : "") : v.Score > 0 ? "hit" : "miss")" title="@(v is null ? "" : Signed(v.Score))">@label</span>
+        }
+      </div>
+      <div class="mini">DOUBLES HIT @DoublesHit(p) / @p.DartsThrown · @(p.DartsThrown == 0 ? "0" : (100.0 * DoublesHit(p) / p.DartsThrown).ToString("F0"))%</div>
+    </div>
+  }
+</div>
+@if (CanInput)
+{
+  <article class="panel">
+    <div class="section-heading"><h2>@Active.Name — @target.Label</h2><div class="pill">@DartsLeft darts left</div></div>
+    <VisitDarts Darts="PendingDarts" Good="target.Matches" />
+    <TargetPad Target="target" OnThrow="OnThrow" Multipliers="DoubleOnly" MissLabel="Missed double" />
+  </article>
+}
+@code {
+  private static readonly int[] DoubleOnly = [2];
+  private int DoublesHit(PlayerSnapshot p) => VisitsOf(p.Id).Sum(v => v.Darts.Count(GameRules.Bob27Target(v.Round).Matches));
+}

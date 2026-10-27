@@ -1,0 +1,110 @@
+@using DartForge.App.Components.Games
+@* Live match screen: picks the board that fits the selected game. *@
+<div class="section-heading">
+  <div><div class="eyebrow">LIVE MATCH · @RoundLabel</div><h1>@GameRules.Name(Snap.Settings.Kind)</h1></div>
+  <div class="heading-actions">
+    <button class="subtle small" @onclick="() => showRules = !showRules">?</button>
+    <button class="subtle" @onclick="OnNew">New</button>
+  </div>
+</div>
+@if (showRules) { <p class="rules-box">@GameRules.Rules(Snap.Settings.Kind)</p> }
+@if (Snap.IsFinished)
+{
+  <div class="success">🏆 @(Snap.Players.FirstOrDefault(x => x.Id == Snap.WinnerId)?.Name ?? "Game over") @(Snap.WinnerId is null ? "" : "wins!")</div>
+}
+
+@switch (Snap.Settings.Kind)
+{
+  case GameKind.X01:
+    <X01Board Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  case GameKind.Cricket:
+  case GameKind.CutThroatCricket:
+  case GameKind.NoScoreCricket:
+    <CricketBoard Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  case GameKind.AroundTheClock:
+    <AroundTheClockBoard Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  case GameKind.Shanghai:
+    <ShanghaiBoard Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  case GameKind.HalveIt:
+    <HalveItBoard Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  case GameKind.Bob27:
+    <Bob27Board Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+  default:
+    <PointsBoard Game="Game" Snap="Snap" CanInput="HumanCanThrow" OnThrow="OnThrow" />
+    break;
+}
+
+@if (!Snap.IsFinished)
+{
+  @if (Snap.Players[Snap.ActivePlayer].IsBot)
+  {
+    <article class="panel bot-panel">
+      <div class="section-heading"><h2>@Snap.Players[Snap.ActivePlayer].Name is throwing…</h2><div class="pill">@(3 - Snap.DartsInVisit) darts left</div></div>
+      <VisitDarts Darts="Game.Pending" />
+      <button class="primary full" disabled="@BotRunning" @onclick="OnBot">@(BotRunning ? "DARTBOT IS THROWING…" : "THROW FOR DARTBOT")</button>
+    </article>
+  }
+  <div class="quick-row">
+    <button class="subtle" disabled="@(!Game.CanUndo || BotRunning)" @onclick="OnUndo">↶ UNDO</button>
+    <button class="subtle" disabled="@(!Game.CanRedo || BotRunning)" @onclick="OnRedo">↷ REDO</button>
+  </div>
+  @if (!string.IsNullOrEmpty(Message)) { <p class="notice">@Message</p> }
+}
+else
+{
+  <article class="panel">
+    <h2>Final standings</h2>
+    @foreach (var p in Standings)
+    {
+      <div class="history-row"><span>@(p.Id == Snap.WinnerId ? "🏆 " : "")@p.Name</span><strong>@ResultText(p)</strong></div>
+    }
+    <p class="muted">Results saved locally.</p>
+    <div class="quick-row">
+      <button class="subtle" disabled="@(!Game.CanUndo)" @onclick="OnUndo">↶ UNDO LAST DART</button>
+      <button class="primary" @onclick="OnRematch">REMATCH</button>
+    </div>
+    <button class="subtle full" @onclick="OnNew">NEW GAME</button>
+  </article>
+}
+@code {
+  [Parameter, EditorRequired] public DartGame Game { get; set; } = default!;
+  [Parameter, EditorRequired] public GameSnapshot Snap { get; set; } = default!;
+  [Parameter] public bool BotRunning { get; set; }
+  [Parameter] public string? Message { get; set; }
+  [Parameter] public EventCallback<DartHit> OnThrow { get; set; }
+  [Parameter] public EventCallback OnBot { get; set; }
+  [Parameter] public EventCallback OnUndo { get; set; }
+  [Parameter] public EventCallback OnRedo { get; set; }
+  [Parameter] public EventCallback OnNew { get; set; }
+  [Parameter] public EventCallback OnRematch { get; set; }
+  private bool showRules;
+
+  private bool HumanCanThrow => !Snap.IsFinished && !Snap.Players[Snap.ActivePlayer].IsBot && !BotRunning;
+
+  private string RoundLabel => GameRules.IsRoundLimited(Snap.Settings.Kind)
+    ? $"ROUND {Math.Min(Snap.Round, GameRules.TotalRounds(Snap.Settings))} / {GameRules.TotalRounds(Snap.Settings)}"
+    : $"ROUND {Snap.Round}";
+
+  private IEnumerable<PlayerSnapshot> Standings => Snap.Settings.Kind switch
+  {
+    GameKind.X01 => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenBy(p => p.Score),
+    GameKind.CutThroatCricket => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenBy(p => p.Score),
+    _ => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenByDescending(p => p.Score)
+  };
+
+  private string ResultText(PlayerSnapshot p) => Snap.Settings.Kind switch
+  {
+    GameKind.X01 => p.Score == 0 ? $"checked out · avg {(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown):F1}" : $"{p.Score} left",
+    GameKind.NoScoreCricket => $"{GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7 closed",
+    GameKind.Cricket or GameKind.CutThroatCricket => $"{p.Score} pts · {GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7 closed",
+    GameKind.AroundTheClock => $"{p.Score}/20 in {p.DartsThrown} darts",
+    GameKind.Bob27 => p.Eliminated ? $"{p.Score} · out" : $"{p.Score} pts",
+    _ => $"{p.Score} pts"
+  };
+}

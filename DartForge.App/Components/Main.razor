@@ -9,37 +9,52 @@
   @if (Session.Current is null || showSetup)
   {
     <section class="hero"><div class="eyebrow">YOUR ARENA. YOUR RULES.</div><h1>Ready to throw?</h1><p>Play local darts with accurate scoring and no interruptions.</p></section>
-    <article class="panel"><h2>New match</h2><label>Game mode</label><select @bind="selectedKind">@foreach (var kind in Enum.GetValues<GameKind>()) { <option value="@kind">@Name(kind)</option> }</select>
-    @if (selectedKind == GameKind.X01) { <label>Start score</label><select @bind="startScore"><option>301</option><option>501</option><option>701</option><option>1001</option></select><label>Finish rule</label><select @bind="outRule"><option value="Double">Double out</option><option value="Straight">Straight out</option><option value="Master">Master out</option></select> }
-    <label>Your name</label><input @bind="playerName" maxlength="25" /><div class="inline"><label class="toggle"><input type="checkbox" @bind="againstBot"/> Play against DartBot</label></div>
-    @if (againstBot) { <label>DartBot level: @botLevel</label><input type="range" min="1" max="20" @bind="botLevel" /> }
-    <button class="primary full" @onclick="Start">START MATCH →</button></article>
+    <article class="panel"><h2>New match</h2>
+    <label>Game mode</label>
+    <div class="mode-grid">
+      @foreach (var kind in Enum.GetValues<GameKind>())
+      {
+        var k = kind;
+        <button class="mode-btn @(selectedKind == k ? "picked" : "")" @onclick="() => selectedKind = k"><span>@ModeIcon(k)</span>@GameRules.Name(k)</button>
+      }
+    </div>
+    <p class="rules-box">@GameRules.Rules(selectedKind)</p>
+    @switch (selectedKind)
+    {
+      case GameKind.X01:
+        <label>Start score</label><select @bind="startScore"><option>101</option><option>301</option><option>501</option><option>701</option><option>1001</option></select>
+        <label>Start rule</label><select @bind="inRule"><option value="Straight">Straight in</option><option value="Double">Double in</option><option value="Master">Master in</option></select>
+        <label>Finish rule</label><select @bind="outRule"><option value="Double">Double out</option><option value="Straight">Straight out</option><option value="Master">Master out</option></select>
+        break;
+      case GameKind.Shanghai:
+        <label>Rounds</label><select @bind="shanghaiRounds"><option value="7">7 rounds (1–7)</option><option value="20">20 rounds (1–20)</option></select>
+        break;
+      case GameKind.CountUp:
+        <label>Target score</label><select @bind="countUpTarget"><option>300</option><option>500</option><option>1000</option></select>
+        break;
+      case GameKind.HighScore:
+        <label>Rounds</label><select @bind="highScoreRounds"><option>3</option><option>5</option><option>7</option><option>10</option></select>
+        break;
+      case GameKind.AroundTheClock:
+        <label>Round limit</label><select @bind="atcRounds"><option>10</option><option>20</option><option>30</option></select>
+        break;
+    }
+    <label>Your name</label><input @bind="playerName" maxlength="25" />
+    <label>Opponent</label>
+    <div class="multiplier">
+      <button class="@(opponent == Opponent.DartBot ? "picked" : "")" @onclick="() => opponent = Opponent.DartBot">DARTBOT</button>
+      <button class="@(opponent == Opponent.SecondPlayer ? "picked" : "")" @onclick="() => opponent = Opponent.SecondPlayer">2ND PLAYER</button>
+      <button class="@(opponent == Opponent.Solo ? "picked" : "")" @onclick="() => opponent = Opponent.Solo">SOLO</button>
+    </div>
+    @if (opponent == Opponent.DartBot) { <label>DartBot level: @botLevel</label><input type="range" min="1" max="20" @bind="botLevel" /> }
+    @if (opponent == Opponent.SecondPlayer) { <label>Second player</label><input @bind="secondName" maxlength="25" /> }
+    <button class="primary full" @onclick="Start">START @GameRules.Name(selectedKind).ToUpperInvariant() →</button></article>
     <div class="footer-ad">AD SPACE · BANNER DISABLED (OFFLINE)</div>
   }
   else
   {
-    var match = Session.Current.Snapshot;
-    <div class="section-heading"><div><div class="eyebrow">LIVE MATCH · ROUND @match.Round</div><h1>@Name(match.Settings.Kind)</h1></div><button class="subtle" @onclick="() => showSetup = true">New</button></div>
-    @if (match.IsFinished) { <div class="success">🏆 Winner: @match.Players.FirstOrDefault(x=>x.Id == match.WinnerId)?.Name</div> }
-    <div class="scorecards">
-    @for (int i=0;i<match.Players.Count;i++) { var p=match.Players[i]; <div class="score-card @(i==match.ActivePlayer && !match.IsFinished ? "active" : "")"><div class="eyebrow">@(p.IsBot ? "DARTBOT" : "PLAYER") @(i+1)</div><strong>@p.Name</strong><div class="huge">@p.Score</div><div class="mini">LEGS @p.Legs · SETS @p.Sets</div><div class="mini">@(p.Visits == 0 ? "0.0" : (p.TotalScored * 3.0 / Math.Max(1,p.DartsThrown)).ToString("F1")) AVG</div></div> }
-    </div>
-    @if (!match.IsFinished)
-    {
-      <article class="panel"><div class="section-heading"><h2>@match.Players[match.ActivePlayer].Name — Throw</h2><div class="pill">@(3 - Session.Current.Pending.Count) darts left</div></div>
-      @if (match.Players[match.ActivePlayer].IsBot) { <button class="primary full" @onclick="BotTurn">THROW FOR DARTBOT</button> }
-      else
-      {
-        <div class="dartline">@foreach (var d in Session.Current.Pending) { <span class="throw-chip">@d.Label</span> }</div>
-        <div class="multiplier"><button class="@(multiplier==1?"picked":"")" @onclick="()=>multiplier=1">SINGLE</button><button class="@(multiplier==2?"picked":"")" @onclick="()=>multiplier=2">DOUBLE</button><button class="@(multiplier==3?"picked":"")" @onclick="()=>multiplier=3">TRIPLE</button></div>
-        <div class="number-grid">@for(int n=1;n<=20;n++) { var number=n; <button @onclick="()=>Throw(number)">@number</button> }</div>
-        <div class="quick-row"><button @onclick="()=>Throw(25)" disabled="@(multiplier==3)">BULL / 25</button><button @onclick="()=>Throw(0)">MISS</button></div>
-      }
-      <div class="quick-row"><button class="subtle" @onclick="Undo">↶ UNDO</button><button class="subtle" @onclick="Redo">↷ REDO</button></div>
-      @if (!string.IsNullOrEmpty(message)) { <p class="notice">@message</p> }
-      </article>
-    }
-    else { <article class="panel"><h2>Match finished</h2><p>Results saved locally.</p><button class="primary full" @onclick="() => showSetup = true">PLAY AGAIN</button></article> }
+    <MatchView Game="Session.Current" Snap="Session.Current.Snapshot" BotRunning="botRunning" Message="@message"
+               OnThrow="Throw" OnBot="BotTurn" OnUndo="Undo" OnRedo="Redo" OnNew="() => showSetup = true" OnRematch="Rematch" />
   }
 }
 else if (tab == "Training")
@@ -57,40 +72,93 @@ else if(tab == "Challenges")
 }
 else if (tab == "Statistics")
 {
-  <div class="eyebrow">YOUR PERFORMANCE</div><h1>Statistics</h1><div class="stat-grid"><div class="panel"><div class="eyebrow">MATCHES</div><div class="metric">@matchHistory.Count</div></div><div class="panel"><div class="eyebrow">TRAINING DARTS</div><div class="metric">@trainingHistory.Sum(x=>x.Darts)</div></div><div class="panel"><div class="eyebrow">TRAINING HITS</div><div class="metric">@trainingHistory.Sum(x=>x.Score)</div></div><div class="panel"><div class="eyebrow">HIT RATE</div><div class="metric">@(trainingHistory.Sum(x=>x.Darts)==0 ? "0%" : (100.0*trainingHistory.Sum(x=>x.Score)/trainingHistory.Sum(x=>x.Darts)).ToString("F1")+"%")</div></div></div><article class="panel"><h2>Recent matches</h2>@if(matchHistory.Count==0) { <p class="muted">No finished matches yet.</p> }@foreach(var r in matchHistory.Take(10)) { <div class="history-row"><span>@r.Mode</span><strong>@r.Winner</strong></div> }</article><div class="footer-ad">AD SPACE · BANNER DISABLED (OFFLINE)</div>
+  <div class="eyebrow">YOUR PERFORMANCE</div><h1>Statistics</h1><div class="stat-grid"><div class="panel"><div class="eyebrow">MATCHES</div><div class="metric">@matchHistory.Count</div></div><div class="panel"><div class="eyebrow">TRAINING DARTS</div><div class="metric">@trainingHistory.Sum(x=>x.Darts)</div></div><div class="panel"><div class="eyebrow">TRAINING HITS</div><div class="metric">@trainingHistory.Sum(x=>x.Score)</div></div><div class="panel"><div class="eyebrow">HIT RATE</div><div class="metric">@(trainingHistory.Sum(x=>x.Darts)==0 ? "0%" : (100.0*trainingHistory.Sum(x=>x.Score)/trainingHistory.Sum(x=>x.Darts)).ToString("F1")+"%")</div></div></div><article class="panel"><h2>Recent matches</h2>@if(matchHistory.Count==0) { <p class="muted">No finished matches yet.</p> }@foreach(var r in matchHistory.Take(10)) { <div class="history-row"><span>@Name(r.Mode)</span><strong>@r.Winner</strong></div> }</article><div class="footer-ad">AD SPACE · BANNER DISABLED (OFFLINE)</div>
 }
 else { <h1>Settings</h1><article class="panel"><h2>Privacy first</h2><p>Game scoring and training are offline. SQLite stores data on this device. No account is required and no advertisement SDK is installed.</p><p>Build: 0.1.0 · .NET 8 MAUI</p></article> }
 </main>
 <nav>@foreach(var name in new[]{"Play","Training","Challenges","Statistics","Settings"}) { <button class="@(tab==name?"nav-active":"")" @onclick="()=>Navigate(name)"><span>@Icon(name)</span><small>@name</small></button> }</nav>
 </div>
 @code {
- private string tab="Play", playerName="Player 1", exercise="T20", currentTarget="T20", message="";
- private bool showSetup=true, againstBot=true, trainingActive;
- private int startScore=501,botLevel=10,multiplier=1,trainingDarts=21,trainingThrown,trainingHits;
+ private string tab="Play", playerName="Player 1", secondName="Player 2", exercise="T20", currentTarget="T20", message="";
+ private bool showSetup=true, trainingActive, botRunning;
+ private int startScore=501,botLevel=10,trainingDarts=21,trainingThrown,trainingHits,shanghaiRounds=7,countUpTarget=300,highScoreRounds=7,atcRounds=30;
  private OutRule outRule=OutRule.Double;
+ private InRule inRule=InRule.Straight;
+ private Opponent opponent=Opponent.DartBot;
  private GameKind selectedKind=GameKind.X01;
  private List<MatchRecord> matchHistory=new(); private List<TrainingRecord> trainingHistory=new();
  protected override async Task OnInitializedAsync() => await Refresh();
  private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); }
  private async Task Navigate(string dest) { tab=dest; if(dest=="Statistics"||dest=="Training"||dest=="Challenges") await Refresh(); }
- private void Start() { Session.Start(new GameSettings(selectedKind,startScore,selectedKind==GameKind.AroundTheClock?30:20,outRule),playerName,againstBot,botLevel); showSetup=false;message=""; multiplier=1; }
- private async Task Throw(int segment)
+
+ private GameSettings BuildSettings() => selectedKind switch
  {
-   if(Session.Current is null)return;
-   try { var hit=segment==0?DartHit.Miss:new DartHit(segment, segment==25?Math.Min(2,multiplier):multiplier); message=Session.Current.Throw(hit).Message; await SaveIfFinished(); }
-   catch(Exception ex){message=ex.Message;}
+   GameKind.X01 => new GameSettings(GameKind.X01, startScore, 20, outRule, inRule),
+   GameKind.Shanghai => new GameSettings(GameKind.Shanghai, MaxRounds: shanghaiRounds),
+   GameKind.CountUp => new GameSettings(GameKind.CountUp, countUpTarget, 99),
+   GameKind.HighScore => new GameSettings(GameKind.HighScore, MaxRounds: highScoreRounds),
+   GameKind.AroundTheClock => new GameSettings(GameKind.AroundTheClock, MaxRounds: atcRounds),
+   GameKind.HalveIt => new GameSettings(GameKind.HalveIt, MaxRounds: GameRules.HalveItTargets.Length),
+   GameKind.Bob27 => new GameSettings(GameKind.Bob27, MaxRounds: GameRules.Bob27Rounds),
+   _ => new GameSettings(selectedKind)
+ };
+
+ private void Start() { Session.Start(BuildSettings(), playerName, opponent, secondName, botLevel); showSetup=false; message=""; }
+ private void Rematch() { Session.Rematch(); message=""; }
+
+ private async Task Throw(DartHit hit)
+ {
+   if(Session.Current is null || botRunning) return;
+   try { message=Session.Current.Throw(hit).Message; }
+   catch(Exception ex){ message=ex.Message; return; }
+   await SaveIfFinished();
+   var snap=Session.Current.Snapshot;
+   if(!snap.IsFinished && snap.Players[snap.ActivePlayer].IsBot) await BotTurn();
  }
+
  private async Task BotTurn()
  {
-  if(Session.Current is null) return;
-  for(int i=0;i<3;i++) { var snap=Session.Current.Snapshot; if(snap.IsFinished || !snap.Players[snap.ActivePlayer].IsBot) break; var hit=Bot.Throw(botLevel,snap.Settings.Kind,snap.Players[snap.ActivePlayer].Score,snap.Players[snap.ActivePlayer].Score+1); Session.Current.Throw(hit); }
+  var game=Session.Current;
+  if(game is null || botRunning) return;
+  botRunning=true;
+  try
+  {
+    while(true)
+    {
+      var snap=game.Snapshot;
+      if(snap.IsFinished || !snap.Players[snap.ActivePlayer].IsBot || Session.Current != game) break;
+      await Task.Delay(snap.DartsInVisit == 0 ? 700 : 450);
+      if(Session.Current != game) break;
+      var name=snap.Players[snap.ActivePlayer].Name;
+      var hit=Bot.ThrowFor(game, Session.BotLevel);
+      message=$"{name}: {hit.Label} — {game.Throw(hit).Message}";
+      StateHasChanged();
+    }
+  }
+  finally { botRunning=false; }
   await SaveIfFinished();
  }
+
+ private static bool BotUp(DartGame g) { var s=g.Snapshot; return !s.IsFinished && s.Players[s.ActivePlayer].IsBot; }
+ /// <summary>Undo the last dart; DartBot darts are rolled back together with it so the human is at the oche again.</summary>
+ private void Undo()
+ {
+   var g=Session.Current; if(g is null || botRunning || !g.Undo()) return;
+   while(BotUp(g) && g.CanUndo) g.Undo();
+   message="Undone";
+ }
+ private async Task Redo()
+ {
+   var g=Session.Current; if(g is null || botRunning || !g.Redo()) return;
+   while(BotUp(g) && g.CanRedo) g.Redo();
+   message="Redone";
+   await SaveIfFinished();
+ }
  private async Task SaveIfFinished() { if(Session.Current is not null && Session.Current.Snapshot.IsFinished && !Session.Saved) { await Store.SaveMatchAsync(Session.Current.Snapshot);Session.MarkSaved();await Refresh(); } }
- private void Undo()=>Session.Current?.Undo(); private void Redo()=>Session.Current?.Redo();
  private void BeginTraining(){trainingActive=true;trainingThrown=trainingHits=0;currentTarget=exercise;}
  private async Task TrainingThrow(bool hit){if(!trainingActive)return;trainingThrown++;if(hit)trainingHits++;if(exercise=="Random")currentTarget=$"T{Random.Shared.Next(1,21)}";if(trainingThrown>=trainingDarts)await EndTraining();}
  private async Task EndTraining(){if(!trainingActive)return;trainingActive=false;await Store.SaveTrainingAsync(exercise,trainingHits,trainingThrown);await Refresh();}
- private static string Name(GameKind k)=>k switch { GameKind.X01=>"X01",GameKind.AroundTheClock=>"Around the Clock",GameKind.CutThroatCricket=>"Cut Throat Cricket", GameKind.NoScoreCricket=>"No Score Cricket",GameKind.CountUp=>"Count Up",GameKind.HighScore=>"High Score",GameKind.HalveIt=>"Halve It",GameKind.Bob27=>"Bob's 27",_=>k.ToString() };
+ private static string Name(string mode)=>Enum.TryParse<GameKind>(mode, out var k) ? GameRules.Name(k) : mode;
+ private static string ModeIcon(GameKind k)=>k switch { GameKind.X01=>"501", GameKind.Cricket=>"✕", GameKind.CutThroatCricket=>"✂", GameKind.NoScoreCricket=>"⚑", GameKind.AroundTheClock=>"◷", GameKind.Shanghai=>"上", GameKind.CountUp=>"↑", GameKind.HighScore=>"★", GameKind.HalveIt=>"½", GameKind.Bob27=>"27", _=>"◎" };
  private static string Icon(string name)=>name switch {"Play"=>"◎","Training"=>"◈","Challenges"=>"★","Statistics"=>"▥",_=>"⚙"};
 }
