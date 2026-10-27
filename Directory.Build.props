@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT' And '$(DartForgeIntermediateRoot)' != ''">
+    <!-- The Android script supplies a short, ASCII-safe path for the legacy
+         .NET 8 manifest merger. Other builds keep their standard local obj. -->
+    <BaseIntermediateOutputPath>$(DartForgeIntermediateRoot)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <!-- BaseIntermediateOutputPath normally excludes obj; preserve that exclusion
+         after relocating the generated files. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(MSBuildProjectDirectory)\obj\**</DefaultItemExcludes>
+  </PropertyGroup>
+</Project>

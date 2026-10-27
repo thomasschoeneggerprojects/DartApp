@@ -2,10 +2,10 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/DartForge.App/bin/Debug/net8.0-android
+/DartForge.App/bin/
 /DartForge.App/obj
 /.vs/DartForge
-/DartForge.Core/bin/Debug/net8.0
+/DartForge.Core/bin
 /DartForge.Core/obj
-/DartForge.Tests/bin/Debug/net8.0
+/DartForge.Tests/bin
 /DartForge.Tests/obj
