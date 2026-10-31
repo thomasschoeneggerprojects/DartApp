@@ -1,16 +1,25 @@
 @using DartForge.App.Components.Games
-@* Live match screen: picks the board that fits the selected game. *@
-<div class="section-heading">
-  <div><div class="eyebrow">LIVE MATCH · @RoundLabel</div><h1>@GameRules.Name(Snap.Settings.Kind)</h1></div>
-  <div class="heading-actions">
-    <button class="subtle small" @onclick="() => showRules = !showRules">?</button>
-    <button class="subtle" @onclick="OnNew">New</button>
-  </div>
+@* Live match screen: a slim top bar + the board that fits the selected game. *@
+<div class="match-bar">
+  <button class="icon-btn" @onclick="OnNew" title="Back to setup"><Icon Name="back" /></button>
+  <div class="mb-title"><Icon Name="@Icon.ForGame(Snap.Settings.Kind)" Size="18" /> @GameRules.Name(Snap.Settings.Kind)</div>
+  <span class="pill">@RoundLabel</span>
+  <button class="icon-btn @(showRules ? "on" : "")" @onclick="() => showRules = !showRules" title="Rules"><Icon Name="help" /></button>
 </div>
 @if (showRules) { <p class="rules-box">@GameRules.Rules(Snap.Settings.Kind)</p> }
+@if (Snap.Players.Count > 2 && !Snap.IsFinished)
+{
+  <div class="turn-order">
+    @for (int i = 0; i < Snap.Players.Count; i++)
+    {
+      var p = Snap.Players[i];
+      <span class="turn-chip @(i == Snap.ActivePlayer ? "active" : "") @(p.Eliminated ? "out" : "")"><Icon Name="@(p.IsBot ? "bot" : "user")" Size="12" /> @p.Name</span>
+    }
+  </div>
+}
 @if (Snap.IsFinished)
 {
-  <div class="success">🏆 @(Snap.Players.FirstOrDefault(x => x.Id == Snap.WinnerId)?.Name ?? "Game over") @(Snap.WinnerId is null ? "" : "wins!")</div>
+  <div class="success"><Icon Name="trophy" Size="22" /> @(Snap.Players.FirstOrDefault(x => x.Id == Snap.WinnerId)?.Name ?? "Game over") @(Snap.WinnerId is null ? "" : "wins!")</div>
 }
 
 @switch (Snap.Settings.Kind)
@@ -44,32 +53,29 @@
 {
   @if (Snap.Players[Snap.ActivePlayer].IsBot)
   {
-    <article class="panel bot-panel">
-      <div class="section-heading"><h2>@Snap.Players[Snap.ActivePlayer].Name is throwing…</h2><div class="pill">@(3 - Snap.DartsInVisit) darts left</div></div>
-      <VisitDarts Darts="Game.Pending" />
-      <button class="primary full" disabled="@BotRunning" @onclick="OnBot">@(BotRunning ? "DARTBOT IS THROWING…" : "THROW FOR DARTBOT")</button>
+    <article class="panel throw-panel bot-panel">
+      <VisitDarts Darts="Game.Pending" Name="@Snap.Players[Snap.ActivePlayer].Name" IsBot="true" Hint="@(BotRunning ? "throwing…" : null)" />
+      @if (!BotRunning) { <button class="primary full" @onclick="OnBot"><Icon Name="play" Size="16" /> LET DARTBOT THROW</button> }
     </article>
   }
-  <div class="quick-row">
-    <button class="subtle" disabled="@(!Game.CanUndo || BotRunning)" @onclick="OnUndo">↶ UNDO</button>
-    <button class="subtle" disabled="@(!Game.CanRedo || BotRunning)" @onclick="OnRedo">↷ REDO</button>
+  <div class="control-row">
+    <button class="icon-btn wide" disabled="@(!Game.CanUndo || BotRunning)" @onclick="OnUndo"><Icon Name="undo" /> Undo</button>
+    <button class="icon-btn wide" disabled="@(!Game.CanRedo || BotRunning)" @onclick="OnRedo"><Icon Name="redo" /> Redo</button>
   </div>
   @if (!string.IsNullOrEmpty(Message)) { <p class="notice">@Message</p> }
 }
 else
 {
   <article class="panel">
-    <h2>Final standings</h2>
     @foreach (var p in Standings)
     {
-      <div class="history-row"><span>@(p.Id == Snap.WinnerId ? "🏆 " : "")@p.Name</span><strong>@ResultText(p)</strong></div>
+      <div class="history-row"><span><Icon Name="@(p.Id == Snap.WinnerId ? "trophy" : p.IsBot ? "bot" : "user")" Size="16" /> @p.Name</span><strong>@ResultText(p)</strong></div>
     }
-    <p class="muted">Results saved locally.</p>
-    <div class="quick-row">
-      <button class="subtle" disabled="@(!Game.CanUndo)" @onclick="OnUndo">↶ UNDO LAST DART</button>
-      <button class="primary" @onclick="OnRematch">REMATCH</button>
+    <div class="control-row">
+      <button class="icon-btn wide" disabled="@(!Game.CanUndo)" @onclick="OnUndo"><Icon Name="undo" /> Undo</button>
+      <button class="primary wide" @onclick="OnRematch"><Icon Name="refresh" Size="18" /> Rematch</button>
     </div>
-    <button class="subtle full" @onclick="OnNew">NEW GAME</button>
+    <button class="subtle full" @onclick="OnNew"><Icon Name="sliders" Size="18" /> New game</button>
   </article>
 }
 @code {
@@ -88,23 +94,21 @@ else
   private bool HumanCanThrow => !Snap.IsFinished && !Snap.Players[Snap.ActivePlayer].IsBot && !BotRunning;
 
   private string RoundLabel => GameRules.IsRoundLimited(Snap.Settings.Kind)
-    ? $"ROUND {Math.Min(Snap.Round, GameRules.TotalRounds(Snap.Settings))} / {GameRules.TotalRounds(Snap.Settings)}"
-    : $"ROUND {Snap.Round}";
+    ? $"R {Math.Min(Snap.Round, GameRules.TotalRounds(Snap.Settings))}/{GameRules.TotalRounds(Snap.Settings)}"
+    : $"R {Snap.Round}";
 
   private IEnumerable<PlayerSnapshot> Standings => Snap.Settings.Kind switch
   {
-    GameKind.X01 => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenBy(p => p.Score),
-    GameKind.CutThroatCricket => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenBy(p => p.Score),
+    GameKind.X01 or GameKind.CutThroatCricket => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenBy(p => p.Score),
     _ => Snap.Players.OrderByDescending(p => p.Id == Snap.WinnerId).ThenByDescending(p => p.Score)
   };
 
   private string ResultText(PlayerSnapshot p) => Snap.Settings.Kind switch
   {
-    GameKind.X01 => p.Score == 0 ? $"checked out · avg {(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown):F1}" : $"{p.Score} left",
-    GameKind.NoScoreCricket => $"{GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7 closed",
-    GameKind.Cricket or GameKind.CutThroatCricket => $"{p.Score} pts · {GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7 closed",
-    GameKind.AroundTheClock => $"{p.Score}/20 in {p.DartsThrown} darts",
-    GameKind.Bob27 => p.Eliminated ? $"{p.Score} · out" : $"{p.Score} pts",
-    _ => $"{p.Score} pts"
+    GameKind.X01 => p.Score == 0 ? $"Ø {(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown):F1}" : $"{p.Score} left",
+    GameKind.NoScoreCricket => $"{GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7",
+    GameKind.AroundTheClock => $"{p.Score}/20",
+    GameKind.Bob27 when p.Eliminated => $"{p.Score} · out",
+    _ => $"{p.Score}"
   };
 }

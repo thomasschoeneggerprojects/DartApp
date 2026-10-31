@@ -1,23 +1,20 @@
 @inherits GameBoardBase
 @{
   var two = Snap.Players.Count == 2;
-  var cols = two ? "minmax(0,1fr) 76px minmax(0,1fr)" : $"72px repeat({Snap.Players.Count}, minmax(0,1fr))";
-  var scoring = Snap.Settings.Kind != GameKind.NoScoreCricket;
+  var cols = two ? "minmax(0,1fr) 72px minmax(0,1fr)" : $"{(Compact ? 48 : 60)}px repeat({Snap.Players.Count}, minmax(0,1fr))";
 }
-<div class="cricket-board" style="grid-template-columns:@cols">
-  @* Header row *@
+<div class="cricket-board @(two ? "" : "multi") @(Compact ? "compact" : "")" style="grid-template-columns:@cols">
   @if (two)
   {
     @PlayerHeader(0)
-    <div class="cb-corner">@(Snap.Settings.Kind == GameKind.CutThroatCricket ? "LOW WINS" : scoring ? "PTS" : "RACE")</div>
+    <div class="cb-corner"><Icon Name="@Icon.ForGame(Snap.Settings.Kind)" Size="18" /></div>
     @PlayerHeader(1)
   }
   else
   {
-    <div class="cb-corner">@(Snap.Settings.Kind == GameKind.CutThroatCricket ? "LOW WINS" : scoring ? "PTS" : "RACE")</div>
+    <div class="cb-corner"><Icon Name="@Icon.ForGame(Snap.Settings.Kind)" Size="18" /></div>
     for (int i = 0; i < Snap.Players.Count; i++) { @PlayerHeader(i) }
   }
-  @* One row per cricket number *@
   @foreach (var n in GameRules.CricketNumbers)
   {
     var number = n;
@@ -37,20 +34,19 @@
 </div>
 @if (CanInput)
 {
-  <article class="panel">
-    <div class="section-heading"><h2>@Active.Name to throw</h2><div class="pill">@DartsLeft darts left</div></div>
-    <VisitDarts Darts="PendingDarts" Good="IsCricketHit" />
+  <article class="panel throw-panel">
+    <VisitDarts Darts="PendingDarts" Good="IsCricketHit" Name="@Active.Name" Hint="tap a number ↑" />
     <div class="multiplier">
-      <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">SINGLE</button>
-      <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">DOUBLE</button>
-      <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">TRIPLE</button>
+      <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">S</button>
+      <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">D ×2</button>
+      <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">T ×3</button>
+      <button class="miss-btn" @onclick="() => Fire(0)"><Icon Name="miss" Size="16" /></button>
     </div>
-    <p class="pad-hint">Tap a number on the board above — or:</p>
-    <div class="quick-row"><button class="miss-btn" @onclick="() => Fire(0)">MISS / OTHER NUMBER</button></div>
   </article>
 }
 @code {
   private int multiplier = 1;
+  private bool Scoring => Snap.Settings.Kind != GameKind.NoScoreCricket;
 
   private static bool IsCricketHit(DartHit d) => d.Segment is >= 15 and <= 20 or 25;
 
@@ -62,23 +58,12 @@
     await Throw(hit);
   }
 
-  private string Mpr(PlayerSnapshot p)
-  {
-    var visits = VisitsOf(p.Id).ToList();
-    if (visits.Count == 0) return "0.00";
-    var marks = visits.SelectMany(v => v.Darts).Where(IsCricketHit).Sum(d => d.Multiplier);
-    return (marks / (double)visits.Count).ToString("F2");
-  }
-
   private RenderFragment PlayerHeader(int i) => __builder =>
   {
     var p = Snap.Players[i];
     <div class="cb-player @(IsActive(i) ? "active" : "") @(Snap.WinnerId == p.Id ? "winner" : "")">
-      <div class="eyebrow">@Role(p, i)</div>
-      <strong>@p.Name</strong>
-      @if (Snap.Settings.Kind != GameKind.NoScoreCricket) { <div class="cb-points">@p.Score</div> }
-      else { <div class="cb-points">@(GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3))/7</div> }
-      <div class="mini">MPR @Mpr(p)</div>
+      <strong><Icon Name="@(p.IsBot ? "bot" : "user")" Size="12" /> @p.Name</strong>
+      <div class="cb-points">@(Scoring ? p.Score.ToString() : $"{GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7")</div>
     </div>
   };
 
@@ -89,6 +74,6 @@
 
   private RenderFragment NumberCell(int number, bool dead) => __builder =>
   {
-    <button class="cb-number @(dead ? "dead" : "")" disabled="@(!CanInput)" @onclick="() => Fire(number)">@(number == 25 ? "BULL" : number.ToString())</button>
+    <button class="cb-number @(dead ? "dead" : "")" disabled="@(!CanInput)" @onclick="() => Fire(number)">@(number == 25 ? "B" : number.ToString())</button>
   };
 }

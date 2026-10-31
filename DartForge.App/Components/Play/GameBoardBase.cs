@@ -22,5 +22,8 @@ public abstract class GameBoardBase : ComponentBase
     protected Task Throw(DartHit hit) => OnThrow.InvokeAsync(hit);
     protected static string Avg(PlayerSnapshot p) => p.DartsThrown == 0 ? "0.0" : (p.TotalScored * 3.0 / p.DartsThrown).ToString("F1");
     protected static string Role(PlayerSnapshot p, int index) => p.IsBot ? "DARTBOT" : $"PLAYER {index + 1}";
+    /// <summary>More than four players: boards switch to a denser layout.</summary>
+    protected bool Compact => Snap.Players.Count > 4;
+    protected string CardsClass => Snap.Players.Count switch { <= 2 => "scorecards", <= 4 => "scorecards four", _ => "scorecards compact" };
     protected static string Signed(int v) => v > 0 ? $"+{v}" : v.ToString();
 }

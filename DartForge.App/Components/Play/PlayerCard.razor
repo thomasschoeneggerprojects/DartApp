@@ -1,0 +1,20 @@
+@* Minimal score card: icon + name, one big value, one optional line. *@
+<div class="score-card @(Active ? "active" : "") @(Out ? "out" : "")">
+  <div class="pc-head">
+    <Icon Name="@(Player.IsBot ? "bot" : "user")" Size="14" />
+    <strong>@Player.Name</strong>
+    @if (Active) { <span class="pc-turn"><Icon Name="dart" Size="14" /></span> }
+  </div>
+  <div class="huge @(ValueClass)">@Value</div>
+  @if (!string.IsNullOrEmpty(Sub)) { <div class="mini">@Sub</div> }
+  @ChildContent
+</div>
+@code {
+  [Parameter, EditorRequired] public PlayerSnapshot Player { get; set; } = default!;
+  [Parameter] public bool Active { get; set; }
+  [Parameter] public bool Out { get; set; }
+  [Parameter] public string Value { get; set; } = "";
+  [Parameter] public string? ValueClass { get; set; }
+  [Parameter] public string? Sub { get; set; }
+  [Parameter] public RenderFragment? ChildContent { get; set; }
+}

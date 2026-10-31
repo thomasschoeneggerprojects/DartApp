@@ -1,0 +1,53 @@
+@* Start screen: dartboard hero with darts flying in, stats and one-tap game tiles. *@
+<section class="landing">
+  <div class="landing-hero">
+    <div class="hero-glow"></div>
+    <div class="board-stage">
+      <Dartboard Class="hero-board" Highlight="20" />
+      <div class="flying-dart d1"><DartSprite /></div>
+      <div class="flying-dart d2"><DartSprite /></div>
+      <div class="flying-dart d3"><DartSprite /></div>
+      <div class="score-pop">180!</div>
+    </div>
+    <h1 class="landing-title">DART<span>FORGE</span></h1>
+    <p class="landing-tag"><Icon Name="shield" Size="14" /> Plays offline · No account · Up to 8 players</p>
+    <button class="primary big-cta" @onclick="OnPlay"><Icon Name="dart" Size="22" /> PLAY NOW</button>
+    @if (HasActiveMatch)
+    {
+      <button class="ghost-cta" @onclick="OnResume"><Icon Name="play" Size="14" /> Resume match</button>
+    }
+  </div>
+
+  <div class="landing-stats">
+    <div><Icon Name="trophy" /><b>@Matches</b><small>Matches</small></div>
+    <div><Icon Name="dart" /><b>@TrainingDarts</b><small>Training darts</small></div>
+    <div><Icon Name="crosshair" /><b>@HitRate</b><small>Hit rate</small></div>
+  </div>
+
+  <h2 class="landing-h2">Quick start</h2>
+  <div class="quick-games">
+    @foreach (var kind in Featured)
+    {
+      var k = kind;
+      <button class="quick-game" @onclick="() => OnQuick.InvokeAsync(k)">
+        <span class="qg-icon"><Icon Name="@Icon.ForGame(k)" Size="24" /></span>
+        <span class="qg-name">@GameRules.Name(k)</span>
+      </button>
+    }
+    <button class="quick-game more" @onclick="OnPlay">
+      <span class="qg-icon"><Icon Name="plus" Size="24" /></span>
+      <span class="qg-name">All games</span>
+    </button>
+  </div>
+</section>
+@code {
+  [Parameter] public int Matches { get; set; }
+  [Parameter] public int TrainingDarts { get; set; }
+  [Parameter] public string HitRate { get; set; } = "0%";
+  [Parameter] public bool HasActiveMatch { get; set; }
+  [Parameter] public EventCallback OnPlay { get; set; }
+  [Parameter] public EventCallback OnResume { get; set; }
+  [Parameter] public EventCallback<GameKind> OnQuick { get; set; }
+
+  private static readonly GameKind[] Featured = [GameKind.X01, GameKind.Cricket, GameKind.AroundTheClock, GameKind.Shanghai, GameKind.HalveIt];
+}

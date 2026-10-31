@@ -6,11 +6,11 @@
     {
       var mult = m;
       <button class="target-btn m@(mult)" disabled="@Disabled" @onclick="() => OnThrow.InvokeAsync(new DartHit(Target.Segment!.Value, mult))">
-        <span class="tb-main">@Short(mult)</span><small>@Long(mult)</small>
+        <span class="tb-main">@Short(mult)</span><small>+@(Target.Segment == 25 ? 25 * mult : Target.Segment * mult)</small>
       </button>
     }
     <button class="target-btn miss" disabled="@Disabled" @onclick="() => OnThrow.InvokeAsync(DartHit.Miss)">
-      <span class="tb-main">✕</span><small>@MissLabel</small>
+      <Icon Name="miss" Size="30" /><small>@MissLabel</small>
     </button>
   </div>
 }
@@ -18,7 +18,7 @@ else
 {
   <DartPad OnThrow="OnThrow" Disabled="Disabled" Highlight="TargetSet" />
 }
-<button class="link-btn" @onclick="() => fullPad = !fullPad">@(fullPad ? "← Quick target buttons" : "Enter exact dart (any segment) →")</button>
+<button class="link-btn" @onclick="() => fullPad = !fullPad"><Icon Name="@(fullPad ? "target" : "keypad")" Size="14" /> @(fullPad ? "Target buttons" : "Other segment")</button>
 @code {
   [Parameter, EditorRequired] public TargetInfo Target { get; set; } = default!;
   [Parameter] public EventCallback<DartHit> OnThrow { get; set; }
@@ -29,5 +29,4 @@ else
   private ISet<int>? TargetSet => Target.Segment is int seg ? new HashSet<int> { seg } : null;
 
   private string Short(int m) => Target.Segment == 25 ? (m == 2 ? "BULL" : "25") : $"{(m == 3 ? "T" : m == 2 ? "D" : "S")}{Target.Segment}";
-  private string Long(int m) => Target.Segment == 25 ? (m == 2 ? "Bullseye · 50" : "Outer bull · 25") : $"{(m == 3 ? "Triple" : m == 2 ? "Double" : "Single")} · {Target.Segment * m}";
 }

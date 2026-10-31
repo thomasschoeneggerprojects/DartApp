@@ -4,6 +4,9 @@ namespace DartForge.Core.Engine;
 /// <summary>Static rule data shared by the engine, the bot and the UI.</summary>
 public static class GameRules
 {
+    /// <summary>Maximum number of players (humans and bots) in one game.</summary>
+    public const int MaxPlayers = 8;
+
     /// <summary>Cricket numbers, in scoreboard order.</summary>
     public static readonly int[] CricketNumbers = [20, 19, 18, 17, 16, 15, 25];
 

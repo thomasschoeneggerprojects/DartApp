@@ -2,14 +2,14 @@
 @if (FixedMultiplier is null)
 {
   <div class="multiplier">
-    <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">SINGLE</button>
-    <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">DOUBLE</button>
-    <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">TRIPLE</button>
+    <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">S</button>
+    <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">D ×2</button>
+    <button class="@(multiplier==3?"picked":"")" @onclick="() => multiplier = 3">T ×3</button>
   </div>
 }
 else
 {
-  <div class="pad-hint">@(FixedMultiplier == 2 ? "Doubles only — tap the number you hit" : "Triples only — tap the number you hit")</div>
+  <div class="pad-hint">@(FixedMultiplier == 2 ? "D ×2 — tap the number" : "T ×3 — tap the number")</div>
 }
 <div class="number-grid">
   @for (int n = 1; n <= 20; n++)
@@ -20,8 +20,8 @@ else
 </div>
 <div class="quick-row">
   @if (Mult != 3 && FixedMultiplier != 2) { <button class="@(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 1)">25</button> }
-  @if (Mult != 3) { <button class="@(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 2)">BULL</button> }
-  <button class="miss-btn" disabled="@Disabled" @onclick="() => Fire(0)">MISS</button>
+  @if (Mult != 3) { <button class="bull-btn @(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 2)"><Icon Name="target" Size="16" /> BULL</button> }
+  <button class="miss-btn" disabled="@Disabled" @onclick="() => Fire(0)"><Icon Name="miss" Size="16" /> MISS</button>
 </div>
 @code {
   [Parameter] public EventCallback<DartHit> OnThrow { get; set; }

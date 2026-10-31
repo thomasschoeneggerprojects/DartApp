@@ -10,7 +10,9 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - Opponent choice: DartBot (auto-throws, aims per game), second local player, or solo; rematch button
 - Local SQLite completed-match and training history
 - Simple target-hit training, lightweight offline challenges and statistics
-- No advertising SDK, no networking, optional visual footer placeholder
+- Google AdMob adaptive banner (native, below the web view) with Google UMP consent for EEA/UK users; hidden during live matches; "Privacy & ad choices" in Settings. Uses Google TEST ids until replaced in `Platforms/Android/Ads/AdConfig.cs` and `AndroidManifest.xml`
+- Landing page (animated dartboard), inline SVG icon set on all buttons, simplified match views, 1–8 players (humans and DartBots with individual levels)
+- App icon + splash from `Resources/AppIcon` and `Resources/Splash`
 - xUnit starter tests
 
 ## Not complete / known limitations
@@ -22,7 +24,7 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - Training currently records hits/misses, without detailed darts, XP or individual training challenges.
 - Offline daily goals are based on local training history, not a full challenge or achievement engine.
 - No actual tournaments, caller voices, sound files, full localization, heatmaps, backup/import/export.
-- No real ad integration; banner is a non-ad placeholder in the UI.
+- Ads need a real AdMob account: create app + banner unit + a GDPR consent message, then swap the test ids.
 - Broader device coverage, lifecycle stress testing, and release signing remain to be completed.
 
 ## Next tasks

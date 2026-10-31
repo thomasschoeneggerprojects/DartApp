@@ -17,4 +17,4 @@ The Android project is configured for API 34 and has been build- and launch-test
 - `DartForge.App`: MAUI Android Blazor Hybrid user interface + SQLite persistence
 - `DartForge.Tests`: starter tests
 
-The app does not request the INTERNET permission and contains no actual ad network SDK. The footer is an optional reserved ad placement in the mock UX.
+The app shows a Google AdMob banner (INTERNET permission) with Google UMP consent for EU users. Game play stays fully offline. Replace the Google test ids in `DartForge.App/Platforms/Android/Ads/AdConfig.cs` and `AndroidManifest.xml` before publishing.

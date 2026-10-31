@@ -123,4 +123,13 @@ public sealed class GameModeTests
             if (GameRules.IsRoundLimited(kind)) Assert.True(g.Snapshot.IsFinished, kind.ToString());
         }
     }
+
+    [Fact] public void AllowsUpToEightPlayers()
+    {
+        var eight = Enumerable.Range(1, 8).Select(i => PlayerInfo.Create($"P{i}")).ToList();
+        var g = new DartGame(new GameSettings(GameKind.Cricket), eight);
+        for (int i = 0; i < 24; i++) g.Throw(DartHit.Miss);
+        Assert.Equal(2, g.Snapshot.Round);
+        Assert.Throws<ArgumentException>(() => new DartGame(new GameSettings(GameKind.X01), Enumerable.Range(1, 9).Select(i => PlayerInfo.Create($"P{i}"))));
+    }
 }

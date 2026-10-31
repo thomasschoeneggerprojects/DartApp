@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:local="clr-namespace:DartForge.App.Components" x:Class="DartForge.App.MainPage" BackgroundColor="#0C111B"><BlazorWebView HostPage="wwwroot/index.html"><BlazorWebView.RootComponents><RootComponent Selector="#app" ComponentType="{x:Type local:Main}" /></BlazorWebView.RootComponents></BlazorWebView></ContentPage>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:DartForge.App.Components" xmlns:controls="clr-namespace:DartForge.App.Controls"
+             x:Class="DartForge.App.MainPage" BackgroundColor="#0C111B">
+  <Grid RowDefinitions="*,Auto">
+    <BlazorWebView Grid.Row="0" HostPage="wwwroot/index.html">
+      <BlazorWebView.RootComponents><RootComponent Selector="#app" ComponentType="{x:Type local:Main}" /></BlazorWebView.RootComponents>
+    </BlazorWebView>
+    <!-- AdMob banner: 0 high until an ad is loaded, hidden during a live match. -->
+    <controls:AdBanner x:Name="Banner" Grid.Row="1" HeightRequest="0" BackgroundColor="#0C111B" />
+  </Grid>
+</ContentPage>

@@ -1,0 +1,44 @@
+@using System.Globalization
+@* A vector dartboard drawn from the standard ring proportions. Optional highlight of one segment. *@
+<svg class="dartboard @Class" viewBox="-120 -120 240 240" role="img" aria-label="Dartboard">
+  <circle r="118" class="db-frame" />
+  <circle r="101" class="db-wire" />
+  @for (int i = 0; i < 20; i++)
+  {
+    var idx = i;
+    var number = GameRules.BoardOrder[idx];
+    var even = idx % 2 == 0;
+    var hl = Highlight == number;
+    <path d="@Sector(idx, TrebleOuter, DoubleInner)" class="@(even ? "db-dark" : "db-light") @(hl ? "db-hl" : "")" />
+    <path d="@Sector(idx, BullOuter, TrebleInner)" class="@(even ? "db-dark" : "db-light") @(hl ? "db-hl" : "")" />
+    <path d="@Sector(idx, TrebleInner, TrebleOuter)" class="@(even ? "db-red" : "db-green") @(hl ? "db-hl" : "")" />
+    <path d="@Sector(idx, DoubleInner, DoubleOuter)" class="@(even ? "db-red" : "db-green") @(hl ? "db-hl" : "")" />
+    @if (ShowNumbers)
+    {
+      @NumberLabel(idx, number)
+    }
+  }
+  <circle r="@F(BullOuter)" class="db-green @(Highlight == 25 ? "db-hl" : "")" />
+  <circle r="@F(BullInner)" class="db-red @(Highlight == 25 ? "db-hl" : "")" />
+</svg>
+@code {
+  [Parameter] public int? Highlight { get; set; }
+  [Parameter] public bool ShowNumbers { get; set; } = true;
+  [Parameter] public string? Class { get; set; }
+
+  // Real board radii (mm) scaled so the double ring ends at r = 100.
+  private const double Scale = 100.0 / 170.0;
+  private const double BullInner = 6.35 * Scale, BullOuter = 15.9 * Scale, TrebleInner = 99 * Scale, TrebleOuter = 107 * Scale, DoubleInner = 162 * Scale, DoubleOuter = 100;
+
+  private static double Rad(int idx) => (-90 + idx * 18) * Math.PI / 180;
+  private static string F(double v) => v.ToString("0.##", CultureInfo.InvariantCulture);
+  private static MarkupString NumberLabel(int idx, int number) => new(
+    $"<text x=\"{F(Math.Cos(Rad(idx)) * 110)}\" y=\"{F(Math.Sin(Rad(idx)) * 110 + 4.5)}\" class=\"db-num\">{number}</text>");
+
+  private static string Sector(int idx, double r1, double r2)
+  {
+    double a1 = (-99 + idx * 18) * Math.PI / 180, a2 = (-81 + idx * 18) * Math.PI / 180;
+    string P(double r, double a) => $"{F(Math.Cos(a) * r)} {F(Math.Sin(a) * r)}";
+    return $"M{P(r2, a1)} A{F(r2)} {F(r2)} 0 0 1 {P(r2, a2)} L{P(r1, a2)} A{F(r1)} {F(r1)} 0 0 0 {P(r1, a1)} Z";
+  }
+}

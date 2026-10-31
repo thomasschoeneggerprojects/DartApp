@@ -39,7 +39,7 @@ public sealed class DartGame
     {
         Settings = settings;
         var list = players.ToList();
-        if (list.Count is < 1 or > 16 || list.Select(p => p.Id).Distinct().Count() != list.Count) throw new ArgumentException("Provide 1 to 16 unique players.");
+        if (list.Count < 1 || list.Count > GameRules.MaxPlayers || list.Select(p => p.Id).Distinct().Count() != list.Count) throw new ArgumentException($"Provide 1 to {GameRules.MaxPlayers} unique players.");
         if (settings.LegsToWin < 1 || settings.SetsToWin < 1 || settings.MaxRounds < 1) throw new ArgumentException("Invalid match configuration.");
         if (settings.Kind is GameKind.X01 or GameKind.CountUp && settings.StartScore < 2) throw new ArgumentException("Invalid start/target score.");
         _players = list.Select(p => new State { Player = p, Score = InitialScore(), Opened = settings.In == InRule.Straight }).ToList();

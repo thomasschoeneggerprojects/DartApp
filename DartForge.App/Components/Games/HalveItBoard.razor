@@ -1,42 +1,36 @@
 @inherits GameBoardBase
 @{
   var target = GameRules.HalveItTarget(Snap.Round);
-  var cols = $"92px repeat({Snap.Players.Count}, minmax(0,1fr))";
 }
-<div class="scorecards">
+<div class="round-banner">
+  <Icon Name="half" Size="30" Class="rb-icon" />
+  <div class="rb-target">@target.Label</div>
+  <div class="rb-label">Miss all 3 → ½</div>
+</div>
+<div class="target-path">
+  @for (int r = 1; r <= TotalRounds; r++)
+  {
+    <span class="@(r < Snap.Round ? "done" : r == Snap.Round && !Snap.IsFinished ? "current" : "")">@ShortLabel(GameRules.HalveItTarget(r))</span>
+  }
+</div>
+<div class="@CardsClass">
   @for (int i = 0; i < Snap.Players.Count; i++)
   {
     var p = Snap.Players[i];
-    <div class="score-card @(IsActive(i) ? "active" : "")">
-      <div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong>
-      <div class="huge">@p.Score</div>
-      <div class="mini">HALVED @HalvedCount(p)× · ROUND @Math.Min(Snap.Round, TotalRounds) / @TotalRounds</div>
-    </div>
+    var last = VisitsOf(p.Id).LastOrDefault();
+    var halved = last is not null && !last.Darts.Any(GameRules.HalveItTarget(last.Round).Matches);
+    <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()">
+      @if (last is not null)
+      {
+        <div class="tag @(halved ? "bad" : "good")"><Icon Name="@(halved ? "half" : "check")" Size="12" /> @(halved ? "halved" : Signed(last.Score))</div>
+      }
+    </PlayerCard>
   }
 </div>
-<article class="panel round-table">
-  <div class="rt-row rt-head" style="grid-template-columns:@cols"><span>TARGET</span>@foreach (var p in Snap.Players) { <span>@p.Name</span> }</div>
-  @for (int r = 1; r <= TotalRounds; r++)
-  {
-    var round = r;
-    var t = GameRules.HalveItTarget(round);
-    <div class="rt-row @(round == Snap.Round && !Snap.IsFinished ? "current" : round > Snap.Round ? "future" : "")" style="grid-template-columns:@cols">
-      <span class="rt-target">@t.Label</span>
-      @foreach (var p in Snap.Players)
-      {
-        var v = VisitOf(p.Id, round);
-        var halved = v is not null && !v.Darts.Any(t.Matches);
-        <span class="@(halved ? "halved" : v is not null ? "plus" : "")">@(v is null ? "" : halved ? "½" : Signed(v.Score))</span>
-      }
-    </div>
-  }
-</article>
 @if (CanInput)
 {
-  <article class="panel">
-    <div class="section-heading"><h2>@Active.Name — @target.Label</h2><div class="pill">@DartsLeft darts left</div></div>
-    <p class="pad-hint warn">Miss the target with all three darts and your @Active.Score points are halved.</p>
-    <VisitDarts Darts="PendingDarts" Good="target.Matches" />
+  <article class="panel throw-panel">
+    <VisitDarts Darts="PendingDarts" Good="target.Matches" Name="@Active.Name" />
     @if (target.Segment is not null)
     {
       <TargetPad Target="target" OnThrow="OnThrow" Multipliers="@(target.Segment == 25 ? BullMults : AllMults)" />
@@ -50,5 +44,5 @@
 @code {
   private static readonly int[] BullMults = [1, 2];
   private static readonly int[] AllMults = [1, 2, 3];
-  private int HalvedCount(PlayerSnapshot p) => VisitsOf(p.Id).Count(v => !v.Darts.Any(GameRules.HalveItTarget(v.Round).Matches));
+  private static string ShortLabel(TargetInfo t) => t.Segment == 25 ? "B" : t.Segment?.ToString() ?? (t.Multiplier == 2 ? "D" : "T");
 }

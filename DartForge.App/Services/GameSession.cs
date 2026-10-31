@@ -1,39 +1,61 @@
 using DartForge.Core.Engine;
 using DartForge.Core.Models;
 namespace DartForge.App.Services;
-public enum Opponent { DartBot, SecondPlayer, Solo }
+
+/// <summary>One seat in the setup screen: a human or a DartBot with its own level.</summary>
+public sealed class PlayerSlot
+{
+    public string Name { get; set; } = "";
+    public bool IsBot { get; set; }
+    public int Level { get; set; } = 10;
+}
+
 public sealed class GameSession
 {
     private GameSettings? _lastSettings;
-    private List<(string Name, bool IsBot)> _lastPlayers = new();
+    private List<PlayerSlot> _lastSlots = new();
+    private readonly Dictionary<Guid, int> _botLevels = new();
     public DartGame? Current { get; private set; }
     public bool Saved { get; private set; }
-    public int BotLevel { get; private set; } = 10;
 
-    public void Start(GameSettings config, string player, bool bot, int botLevel = 10) =>
-        Start(config, player, bot ? Opponent.DartBot : Opponent.Solo, null, botLevel);
-
-    public void Start(GameSettings config, string player, Opponent opponent, string? secondPlayer, int botLevel = 10)
+    /// <summary>Legacy overload: one human, optionally against one DartBot.</summary>
+    public void Start(GameSettings config, string player, bool bot, int botLevel = 10)
     {
-        var players = new List<(string, bool)> { (string.IsNullOrWhiteSpace(player) ? "Player 1" : player.Trim(), false) };
-        if (opponent == Opponent.DartBot) players.Add(($"DartBot (Lv {botLevel})", true));
-        if (opponent == Opponent.SecondPlayer) players.Add((string.IsNullOrWhiteSpace(secondPlayer) ? "Player 2" : secondPlayer.Trim(), false));
-        BotLevel = botLevel;
-        Begin(config, players);
+        var slots = new List<PlayerSlot> { new() { Name = player } };
+        if (bot) slots.Add(new PlayerSlot { Name = "DartBot", IsBot = true, Level = botLevel });
+        Start(config, slots);
+    }
+
+    /// <summary>Starts a game with 1 to <see cref="GameRules.MaxPlayers"/> players in the given throwing order.</summary>
+    public void Start(GameSettings config, IEnumerable<PlayerSlot> slots)
+    {
+        var list = slots.Select(s => new PlayerSlot { Name = s.Name, IsBot = s.IsBot, Level = Math.Clamp(s.Level, 1, 20) }).ToList();
+        if (list.Count is < 1 or > GameRules.MaxPlayers) throw new ArgumentException($"Choose 1 to {GameRules.MaxPlayers} players.");
+        _lastSettings = config; _lastSlots = list;
+        _botLevels.Clear();
+        var humans = 0; var bots = 0;
+        var players = new List<PlayerInfo>();
+        foreach (var s in list)
+        {
+            var fallback = s.IsBot ? $"DartBot {++bots}" : $"Player {++humans}";
+            var name = string.IsNullOrWhiteSpace(s.Name) ? fallback : s.Name.Trim();
+            if (s.IsBot) name = $"{name} · Lv{s.Level}";
+            var info = PlayerInfo.Create(name, s.IsBot);
+            if (s.IsBot) _botLevels[info.Id] = s.Level;
+            players.Add(info);
+        }
+        Current = new DartGame(config, players); Saved = false;
     }
 
     /// <summary>Starts a fresh game with the same settings and players.</summary>
     public void Rematch()
     {
         if (_lastSettings is null) return;
-        Begin(_lastSettings, _lastPlayers.ToList());
+        Start(_lastSettings, _lastSlots.ToList());
     }
 
-    private void Begin(GameSettings config, List<(string Name, bool IsBot)> players)
-    {
-        _lastSettings = config; _lastPlayers = players;
-        Current = new DartGame(config, players.Select(p => PlayerInfo.Create(p.Name, p.IsBot))); Saved = false;
-    }
+    /// <summary>DartBot level of a player (10 if unknown).</summary>
+    public int LevelOf(Guid playerId) => _botLevels.TryGetValue(playerId, out var l) ? l : 10;
 
     public void MarkSaved() => Saved = true;
 }

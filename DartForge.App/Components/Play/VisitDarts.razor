@@ -1,15 +1,26 @@
-@* The three dart slots of the current visit. *@
+@* Who is throwing + the three dart slots of the current visit. *@
+@if (Name is not null)
+{
+  <div class="turn-head">
+    <span class="turn-avatar @(IsBot ? "bot" : "")"><Icon Name="@(IsBot ? "bot" : "user")" Size="18" /></span>
+    <strong>@Name</strong>
+    @if (Hint is not null) { <span class="turn-hint">@Hint</span> }
+  </div>
+}
 <div class="visit-darts">
   @for (int i = 0; i < 3; i++)
   {
     if (i < Darts.Count)
     {
       var d = Darts[i];
-      <span class="dart-slot filled @(Good?.Invoke(d) == true ? "good" : d.Segment == 0 || Good is not null ? "bad" : "")">@d.Label</span>
+      var good = Good?.Invoke(d);
+      <span class="dart-slot filled @(good == true ? "good" : d.Segment == 0 || good == false ? "bad" : "")">
+        <Icon Name="@(d.Segment == 0 ? "miss" : good == true ? "check" : "dart")" Size="14" /> @d.Label
+      </span>
     }
     else
     {
-      <span class="dart-slot">Dart @(i + 1)</span>
+      <span class="dart-slot"><Icon Name="dart" Size="14" /></span>
     }
   }
 </div>
@@ -17,4 +28,8 @@
   [Parameter, EditorRequired] public IReadOnlyList<DartHit> Darts { get; set; } = Array.Empty<DartHit>();
   /// <summary>Optional: marks darts that count for the current target.</summary>
   [Parameter] public Func<DartHit, bool>? Good { get; set; }
+  [Parameter] public string? Name { get; set; }
+  [Parameter] public bool IsBot { get; set; }
+  /// <summary>Short info on the right, e.g. "121 left".</summary>
+  [Parameter] public string? Hint { get; set; }
 }

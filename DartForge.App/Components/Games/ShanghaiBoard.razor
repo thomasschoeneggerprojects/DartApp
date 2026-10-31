@@ -4,45 +4,23 @@
   var hitMults = Snap.IsFinished ? new HashSet<int>() : PendingDarts.Where(target.Matches).Select(d => d.Multiplier).ToHashSet();
 }
 <div class="round-banner">
-  <div><div class="eyebrow">ROUND @Math.Min(Snap.Round, TotalRounds) / @TotalRounds</div><div class="rb-label">Target</div></div>
+  <Icon Name="target" Size="30" Class="rb-icon" />
   <div class="rb-target">@target.Segment</div>
-  <div class="shanghai-meter" title="Single, double and triple in one visit = Shanghai">
+  <div class="shanghai-meter" title="Single + double + triple in one visit = Shanghai (instant win)">
     <span class="@(hitMults.Contains(1) ? "on" : "")">S</span><span class="@(hitMults.Contains(2) ? "on" : "")">D</span><span class="@(hitMults.Contains(3) ? "on" : "")">T</span>
   </div>
 </div>
-<div class="scorecards">
+<div class="@CardsClass">
   @for (int i = 0; i < Snap.Players.Count; i++)
   {
     var p = Snap.Players[i];
-    <div class="score-card @(IsActive(i) ? "active" : "")">
-      <div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong>
-      <div class="huge">@p.Score</div>
-      <div class="mini">AVG / ROUND @(p.Visits == 0 ? "0.0" : (p.Score / (double)p.Visits).ToString("F1"))</div>
-    </div>
+    <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()" />
   }
 </div>
-<article class="panel round-table">
-  <div class="rt-row rt-head" style="grid-template-columns:52px repeat(@Snap.Players.Count, minmax(0,1fr))">
-    <span>RND</span>@foreach (var p in Snap.Players) { <span>@p.Name</span> }
-  </div>
-  @for (int r = 1; r <= Math.Min(TotalRounds, Snap.Round); r++)
-  {
-    var round = r;
-    <div class="rt-row @(round == Snap.Round && !Snap.IsFinished ? "current" : "")" style="grid-template-columns:52px repeat(@Snap.Players.Count, minmax(0,1fr))">
-      <span class="rt-target">@round</span>
-      @foreach (var p in Snap.Players)
-      {
-        var v = VisitOf(p.Id, round);
-        <span class="@(v?.Score == 0 ? "zero" : "")">@(v is null ? "" : v.Score.ToString())</span>
-      }
-    </div>
-  }
-</article>
 @if (CanInput)
 {
-  <article class="panel">
-    <div class="section-heading"><h2>@Active.Name — aim for @target.Segment</h2><div class="pill">@DartsLeft darts left</div></div>
-    <VisitDarts Darts="PendingDarts" Good="target.Matches" />
+  <article class="panel throw-panel">
+    <VisitDarts Darts="PendingDarts" Good="target.Matches" Name="@Active.Name" />
     <TargetPad Target="target" OnThrow="OnThrow" />
   </article>
 }

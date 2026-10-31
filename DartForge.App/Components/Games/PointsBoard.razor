@@ -5,35 +5,23 @@
   var goal = Snap.Settings.StartScore;
 }
 <div class="round-banner">
-  <div><div class="eyebrow">@(countUp ? "RACE TO" : "ROUND")</div><div class="rb-label">@(countUp ? "First to reach the target wins" : "Highest total after the last round wins")</div></div>
+  <Icon Name="@(countUp ? "flag" : "star")" Size="30" Class="rb-icon" />
   <div class="rb-target">@(countUp ? goal.ToString() : $"{Math.Min(Snap.Round, TotalRounds)}/{TotalRounds}")</div>
+  <div class="rb-label">@(countUp ? "race to" : "rounds")</div>
 </div>
-<div class="scorecards">
+<div class="@CardsClass">
   @for (int i = 0; i < Snap.Players.Count; i++)
   {
     var p = Snap.Players[i];
-    var recent = VisitsOf(p.Id).TakeLast(4).Select(v => v.Score).ToList();
-    <div class="score-card @(IsActive(i) ? "active" : "")">
-      <div class="eyebrow">@Role(p, i)</div><strong>@p.Name</strong>
-      <div class="huge">@p.Score</div>
-      @if (countUp)
-      {
-        <div class="progress"><div style="width:@(Math.Min(100, 100 * p.Score / Math.Max(1, goal)))%"></div></div>
-        <div class="mini">@Math.Max(0, goal - p.Score) TO GO · AVG @Avg(p)</div>
-      }
-      else
-      {
-        <div class="mini">AVG @Avg(p) · BEST @(VisitsOf(p.Id).Select(v => v.Score).DefaultIfEmpty(0).Max())</div>
-      }
-      <div class="mini">LAST @(recent.Count == 0 ? "–" : string.Join(" · ", recent))</div>
-    </div>
+    <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()">
+      @if (countUp) { <div class="progress"><div style="width:@(Math.Min(100, 100 * p.Score / Math.Max(1, goal)))%"></div></div> }
+    </PlayerCard>
   }
 </div>
 @if (CanInput)
 {
-  <article class="panel">
-    <div class="section-heading"><h2>@Active.Name to throw</h2><div class="pill">@DartsLeft darts left · @(PendingDarts.Sum(d => d.Score)) pts</div></div>
-    <VisitDarts Darts="PendingDarts" />
+  <article class="panel throw-panel">
+    <VisitDarts Darts="PendingDarts" Name="@Active.Name" Hint="@($"+{PendingDarts.Sum(d => d.Score)}")" />
     <DartPad OnThrow="OnThrow" />
   </article>
 }
