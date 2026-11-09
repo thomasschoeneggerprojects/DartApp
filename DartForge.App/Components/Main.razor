@@ -4,7 +4,7 @@
 @inject AdState Ads
 <div class="app-shell">
 <header>
-  <button class="logo" @onclick='() => Navigate("Home")'><img class="logo-img" src="img/logo.png" alt="" /> <span>DART</span>FORGE</button>
+  <button class="logo" @onclick='() => Navigate("Home")'><img class="logo-img" src="img/logo.png" alt="" /> <span>DART</span>TA</button>
   <button class="icon-btn @(tab == "Settings" ? "on" : "")" @onclick='() => Navigate("Settings")' title="Settings"><Icon Name="sliders" /></button>
 </header>
 <main>
@@ -121,7 +121,7 @@ else if (tab == "Statistics")
   </div>
   <article class="panel">@if(matchHistory.Count==0) { <p class="muted">No finished matches yet.</p> }@foreach(var r in matchHistory.Take(10)) { <div class="history-row"><span><Icon Name="@ModeIconName(r.Mode)" Size="14" /> @Name(r.Mode)</span><strong><Icon Name="trophy" Size="12" /> @r.Winner</strong></div> }</article>
 }
-else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><article class="panel"><p><Icon Name="shield" Size="16" /> Games, training and stats work offline and stay on this device (SQLite). No account needed.</p><p><Icon Name="bolt" Size="16" /> DartForge is free thanks to a small Google AdMob banner. It is hidden while you play a match.</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> Privacy &amp; ad choices</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p></article> }
+else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><article class="panel"><p><Icon Name="shield" Size="16" /> Games, training and stats work offline and stay on this device (SQLite). No account needed.</p><p><Icon Name="bolt" Size="16" /> DartTA is free thanks to a small Google AdMob banner shown at the bottom of each screen.</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> Privacy &amp; ad choices</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p></article> }
 </main>
 <nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@item.Label</small></button> }</nav>
 </div>
@@ -135,8 +135,6 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
  private GameKind selectedKind=GameKind.X01;
  private List<MatchRecord> matchHistory=new(); private List<TrainingRecord> trainingHistory=new();
  protected override async Task OnInitializedAsync() => await Refresh();
- /// <summary>Show the ad banner everywhere except on the live match screen.</summary>
- protected override void OnAfterRender(bool firstRender) => Ads.SetBannerWanted(!(tab == "Play" && !showSetup && Session.Current is not null));
  private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); }
  private async Task Navigate(string dest) { tab=dest; if(dest is "Statistics" or "Training" or "Challenges" or "Home") await Refresh(); }
  private static readonly (string Tab, string Icon, string Label)[] NavItems = [("Home","home","Home"),("Play","dart","Play"),("Training","crosshair","Training"),("Challenges","star","Goals"),("Statistics","chart","Stats")];

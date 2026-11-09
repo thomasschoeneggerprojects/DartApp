@@ -1,4 +1,4 @@
-# DartForge implementation status
+# DartTA implementation status
 
 This package is a **source-code MVP**, not the complete feature set from the master prompt. The app builds as a signed .NET 8 Android APK and has been installed and launch-tested on an Android emulator.
 
@@ -10,7 +10,7 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - Opponent choice: DartBot (auto-throws, aims per game), second local player, or solo; rematch button
 - Local SQLite completed-match and training history
 - Simple target-hit training, lightweight offline challenges and statistics
-- Google AdMob adaptive banner (native, below the web view) with Google UMP consent for EEA/UK users; hidden during live matches; "Privacy & ad choices" in Settings. Uses Google TEST ids until replaced in `Platforms/Android/Ads/AdConfig.cs` and `AndroidManifest.xml`
+- Google AdMob adaptive banner (native, below the web view) on every screen, with Google UMP consent for EEA/UK users and "Privacy & ad choices" in Settings. Uses Google TEST ids until replaced in `Platforms/Android/Ads/AdConfig.cs` and `AndroidManifest.xml`
 - Landing page (animated dartboard), inline SVG icon set on all buttons, simplified match views, 1–8 players (humans and DartBots with individual levels)
 - App icon + splash from `Resources/AppIcon` and `Resources/Splash`
 - xUnit starter tests

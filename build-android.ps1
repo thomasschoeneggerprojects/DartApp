@@ -42,7 +42,7 @@ $intermediateRoot = Join-Path $shortTemp "DartForge\$RuntimeIdentifier\obj"
 $buildArguments = @(
     'build'
     $project
-    '-f', 'net8.0-android'
+    '-f', 'net9.0-android'
     '-c', 'Debug'
     '-m:1'
     "-p:DartForgeIntermediateRoot=$intermediateRoot"
@@ -58,7 +58,7 @@ if (-not $Run) {
     exit 0
 }
 
-$apk = Join-Path $PSScriptRoot "DartForge.App\bin\Debug\net8.0-android\$RuntimeIdentifier\com.dartforge.app-Signed.apk"
+$apk = Join-Path $PSScriptRoot "DartForge.App\bin\Debug\net9.0-android\$RuntimeIdentifier\com.dartforge.app-Signed.apk"
 & $adb @adbArguments install -r --no-incremental $apk
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE

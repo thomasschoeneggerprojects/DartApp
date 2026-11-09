@@ -2,9 +2,9 @@
   <!-- Needed to load ads. All game features keep working offline. -->
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-  <application android:allowBackup="true" android:label="DartForge" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:usesCleartextTraffic="false">
+  <application android:allowBackup="true" android:label="DartTA" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round" android:usesCleartextTraffic="false">
     <!-- AdMob app id. This is Google's TEST id; replace it with yours (and AdConfig.cs) before release. -->
     <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713" />
   </application>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="34" />
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="35" />
 </manifest>

@@ -6,7 +6,7 @@
     <BlazorWebView Grid.Row="0" HostPage="wwwroot/index.html">
       <BlazorWebView.RootComponents><RootComponent Selector="#app" ComponentType="{x:Type local:Main}" /></BlazorWebView.RootComponents>
     </BlazorWebView>
-    <!-- AdMob banner: 0 high until an ad is loaded, hidden during a live match. -->
+    <!-- Shared AdMob banner: shown at the bottom of every app screen once loaded. -->
     <controls:AdBanner x:Name="Banner" Grid.Row="1" HeightRequest="0" BackgroundColor="#0C111B" />
   </Grid>
 </ContentPage>
