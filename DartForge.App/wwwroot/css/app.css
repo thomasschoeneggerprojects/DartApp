@@ -352,3 +352,7 @@ nav{background:#0a1016;border-top:0;box-shadow:0 -6px 18px #0006;padding:6px 6px
 nav button{--acc:78,210,160;color:#9eacb8;border-radius:12px;font-size:11px}
 nav small{font-size:11px;font-weight:500}
 nav button.nav-active,nav .nav-active{color:rgb(var(--acc));background:rgba(var(--acc),.13)}
+
+/* Play setup: game buttons left-aligned (icon + name start at the left edge) */
+.mode-btn{justify-content:flex-start;text-align:left}
+.panel.setup .control-row .icon-btn{justify-content:flex-start}
