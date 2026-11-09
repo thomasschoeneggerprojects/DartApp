@@ -6,5 +6,5 @@
     <!-- AdMob app id. This is Google's TEST id; replace it with yours (and AdConfig.cs) before release. -->
     <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713" />
   </application>
-  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="35" />
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="36" />
 </manifest>

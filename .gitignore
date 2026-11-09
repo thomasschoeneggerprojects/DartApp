@@ -1,4 +1,4 @@
-﻿################################################################################
+################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
@@ -10,3 +10,9 @@
 /DartForge.Tests/bin
 /DartForge.Tests/obj
 /.vs/ProjectEvaluation
+
+# Play Store upload key - NEVER commit, back it up separately
+/PlayStore/signing/
+*.keystore
+*.p12
+*.jks

@@ -1,0 +1,32 @@
+DartTA is a fast, clean darts scoring app for your steel- or soft-tip board. Enter every dart with one tap, let the app do the maths and focus on your throw – fully offline, no account needed.
+
+🎯 10 GAME MODES
+• X01 (301 / 501 / 701 …) with straight, double or master in and out
+• Cricket, Cut Throat Cricket and No Score Cricket with a clear marks board and MPR
+• Around the Clock with a progress track
+• Shanghai with round table and Shanghai meter
+• Halve It, Bob's 27, Count Up and High Score
+
+🤖 PLAY ALONE, WITH FRIENDS OR AGAINST THE BOT
+• 1 to 8 players – mix humans and DartBots
+• 20 bot levels, from beginner to strong club player
+• Shuffle the throwing order, rematch with one tap
+
+✅ MADE FOR THE OCHE
+• Dart-by-dart entry with automatic turn change
+• Checkout suggestions in X01
+• Undo and redo for every dart
+• Large buttons, dark design that is easy on the eyes
+
+📈 TRAIN AND TRACK PROGRESS
+• Target training with hit rate
+• Daily goals
+• Match history and statistics stored on your device
+
+🌍 LANGUAGES
+English, Deutsch and Español – follows your phone language or choose it in the settings.
+
+🔒 PRIVACY
+All games and statistics stay on your device. The app is free and shows a small banner ad; in the EU/UK you decide about personalised ads via the consent dialog and can change it at any time in Settings.
+
+Good darts! 🎯

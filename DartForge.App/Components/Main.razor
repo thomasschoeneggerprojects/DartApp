@@ -151,7 +151,7 @@ else
       </select>
     </label>
     @if (Loc.SelectedLanguage == AppLanguage.System) { <p class="muted lang-detected">@L("Settings_DetectedLanguage", Loc.ActiveLanguage.NativeName)</p> }
-    <p><Icon Name="shield" Size="16" /> @L("Settings_Offline")</p><p><Icon Name="bolt" Size="16" /> @L("Settings_Ads")</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> @L("Settings_Privacy")</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p>
+    <p><Icon Name="shield" Size="16" /> @L("Settings_Offline")</p><p><Icon Name="bolt" Size="16" /> @L("Settings_Ads")</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> @L("Settings_Privacy")</button><p class="muted">Version @Microsoft.Maui.ApplicationModel.AppInfo.Current.VersionString (@Microsoft.Maui.ApplicationModel.AppInfo.Current.BuildString)</p>
   </article>
 }
 </main>

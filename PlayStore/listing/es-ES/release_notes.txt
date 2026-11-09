@@ -1,0 +1,1 @@
+Primera versión: 10 modos de juego (X01, variantes de Cricket, Around the Clock, Shanghai, Halve It, Bob's 27, Count Up, High Score), DartBot con 20 niveles, entrenamiento, objetivos diarios y estadísticas. Español, inglés y alemán.

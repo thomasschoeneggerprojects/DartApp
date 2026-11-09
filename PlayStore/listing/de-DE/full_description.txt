@@ -1,0 +1,32 @@
+DartTA ist ein schneller, übersichtlicher Darts-Zähler für Steel- und Softdarts. Jeden Pfeil mit einem Tipp eintragen, die App rechnet – du konzentrierst dich auf den Wurf. Komplett offline, ohne Konto.
+
+🎯 10 SPIELMODI
+• X01 (301 / 501 / 701 …) mit Straight-, Double- oder Master-In und -Out
+• Cricket, Cut Throat Cricket und No Score Cricket mit übersichtlicher Markierungstafel und MPR
+• Around the Clock mit Fortschrittsanzeige
+• Shanghai mit Rundentabelle und Shanghai-Anzeige
+• Halve It, Bob's 27, Count Up und High Score
+
+🤖 ALLEIN, MIT FREUNDEN ODER GEGEN DEN BOT
+• 1 bis 8 Spieler – Menschen und DartBots gemischt
+• 20 Bot-Stärken, vom Einsteiger bis zum starken Vereinsspieler
+• Wurfreihenfolge mischen, Revanche mit einem Tipp
+
+✅ GEMACHT FÜR DIE OCHE
+• Eingabe Pfeil für Pfeil mit automatischem Spielerwechsel
+• Checkout-Vorschläge bei X01
+• Rückgängig und Wiederholen für jeden Pfeil
+• Große Tasten, augenschonendes dunkles Design
+
+📈 TRAINIEREN UND FORTSCHRITT SEHEN
+• Zieltraining mit Trefferquote
+• Tagesziele
+• Spielverlauf und Statistiken direkt auf deinem Gerät
+
+🌍 SPRACHEN
+Deutsch, English und Español – folgt der Sprache deines Handys oder wähle sie in den Einstellungen.
+
+🔒 DATENSCHUTZ
+Alle Spiele und Statistiken bleiben auf deinem Gerät. Die App ist kostenlos und zeigt ein kleines Werbebanner; in der EU/UK entscheidest du im Einwilligungsdialog über personalisierte Werbung und kannst das jederzeit in den Einstellungen ändern.
+
+Good Darts! 🎯
