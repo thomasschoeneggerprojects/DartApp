@@ -1,0 +1,60 @@
+@inject Microsoft.JSInterop.IJSRuntime JS
+@* Start animation in the BikeTa style (styles: wwwroot/css/intro.css). Continues the static copy from index.html
+   that plays while Blazor boots. Tap to skip. *@
+<div id="intro-live" class="intro @(fading ? "done" : "")" aria-hidden="true" @onclick="Skip">
+  <div class="intro-halo"></div>
+  <div class="intro-stage">
+    <div class="intro-rider">
+      <div class="intro-lines"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <img class="intro-ghost g3" src="img/intro-logo.png" alt=""/><img class="intro-ghost g2" src="img/intro-logo.png" alt=""/><img class="intro-ghost g1" src="img/intro-logo.png" alt=""/>
+      <div class="intro-pulse">
+        <img src="img/intro-logo.png" alt=""/>
+        <svg class="intro-swoosh" viewBox="-118 -118 236 236">
+          <defs>
+            <linearGradient id="ilg" gradientUnits="userSpaceOnUse" x1="50" y1="-87" x2="50" y2="87">
+              <stop offset="0" stop-color="#1450d8"/><stop offset=".45" stop-color="#2f8cff"/>
+              <stop offset=".8" stop-color="#8fd2ff" stop-opacity=".7"/><stop offset="1" stop-color="#d6f0ff" stop-opacity="0"/>
+            </linearGradient>
+            <filter id="ilglow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter>
+            <path id="ilc" d="M50 -86.6 A100 100 0 0 1 50 86.6 A135 135 0 0 0 50 -86.6Z"/>
+            <g id="ila"><use href="#ilc" fill="#3b9bff" opacity=".45" filter="url(#ilglow)"/><use href="#ilc" fill="url(#ilg)"/></g>
+          </defs>
+          <g class="sp2"><g transform="rotate(90) scale(.86)"><use href="#ila"/><use href="#ila" transform="rotate(180)"/></g></g>
+          <g class="sp"><g transform="rotate(-40)"><use href="#ila"/><use href="#ila" transform="rotate(180)"/></g></g>
+        </svg>
+      </div>
+    </div>
+    <div class="intro-ring"></div><div class="intro-ring r2"></div>
+  </div>
+  <div class="intro-text">
+    <div class="intro-title">DART<span>TA</span></div>
+    <div class="intro-tag">DART SCORING &amp; TRAINING</div>
+  </div>
+</div>
+
+@code {
+    /// <summary>How long the intro is visible, counted from app start (incl. boot). BikeTa uses 3.9 s.</summary>
+    [Parameter] public int MinimumMs { get; set; } = 3900;
+    /// <summary>Raised when the intro starts fading out – render the main screen underneath now.</summary>
+    [Parameter] public EventCallback OnReveal { get; set; }
+    /// <summary>Raised when the fade-out has finished – remove the intro.</summary>
+    [Parameter] public EventCallback OnFinished { get; set; }
+
+    private bool fading;
+    private readonly CancellationTokenSource skip = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        double elapsed = 0;
+        try { elapsed = await JS.InvokeAsync<double>("dartIntro.elapsed", Array.Empty<object?>()); } catch { /* script missing – just use MinimumMs */ }
+        try { await Task.Delay(Math.Max(600, MinimumMs - (int)elapsed), skip.Token); } catch (TaskCanceledException) { }
+        await OnReveal.InvokeAsync();
+        fading = true;
+        StateHasChanged();
+        await Task.Delay(600);
+        await OnFinished.InvokeAsync();
+    }
+
+    private void Skip() => skip.Cancel();
+}

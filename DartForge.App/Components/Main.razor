@@ -2,16 +2,31 @@
 @inject LocalStore Store
 @inject DartBot Bot
 @inject AdState Ads
+@if (showIntro)
+{
+  <Intro OnReveal="() => introRevealed = true" OnFinished="() => showIntro = false" />
+}
+@if (introRevealed)
+{
 <div class="app-shell">
-<header>
-  <button class="logo" @onclick='() => Navigate("Home")'><img class="logo-img" src="img/logo.png" alt="" /> <span>DART</span>TA</button>
-  <button class="icon-btn @(tab == "Settings" ? "on" : "")" @onclick='() => Navigate("Settings")' title="Settings"><Icon Name="sliders" /></button>
-</header>
-<main>
+@if (tab != "Home")
+{
+  var header = PageInfo;
+  <header class="page-header" style="--acc:@header.Accent">
+    <button class="ph-back" @onclick='() => Navigate("Home")' title="Back"><Icon Name="back" Size="20" /></button>
+    <span class="ph-badge"><Icon Name="@header.Icon" Size="22" /></span>
+    <span class="ph-text"><b>@header.Title</b><small>@header.Text</small></span>
+    @if (tab != "Settings")
+    {
+      <button class="ph-btn" @onclick='() => Navigate("Settings")' title="Settings"><Icon Name="sliders" Size="20" /></button>
+    }
+  </header>
+}
+<main class="@(tab == "Home" ? "home-main" : "")">
 @if (tab == "Home")
 {
-  <Landing Matches="matchHistory.Count" TrainingDarts="trainingHistory.Sum(x => x.Darts)" HitRate="@HitRate" HasActiveMatch="HasActiveMatch"
-           OnPlay="OpenSetup" OnResume="Resume" OnQuick="QuickStart" />
+  <Landing Matches="matchHistory.Count" TrainingDarts="trainingHistory.Sum(x => x.Darts)" TodayDarts="TodayDarts" HitRate="@HitRate" HasActiveMatch="HasActiveMatch"
+           OnPlay="OpenSetup" OnResume="Resume" OnQuick="QuickStart" OnNavigate="Navigate" />
 }
 else if (tab == "Play")
 {
@@ -123,9 +138,11 @@ else if (tab == "Statistics")
 }
 else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><article class="panel"><p><Icon Name="shield" Size="16" /> Games, training and stats work offline and stay on this device (SQLite). No account needed.</p><p><Icon Name="bolt" Size="16" /> DartTA is free thanks to a small Google AdMob banner shown at the bottom of each screen.</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> Privacy &amp; ad choices</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p></article> }
 </main>
-<nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@item.Label</small></button> }</nav>
+<nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" style="--acc:@item.Accent" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@item.Label</small></button> }</nav>
 </div>
+}
 @code {
+ private bool showIntro=true, introRevealed;
  private string tab="Home", exercise="T20", currentTarget="T20", message="";
  private bool showSetup=true, trainingActive, botRunning;
  private int startScore=501,trainingDarts=21,trainingThrown,trainingHits,shanghaiRounds=7,countUpTarget=300,highScoreRounds=7,atcRounds=30;
@@ -137,7 +154,18 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
  protected override async Task OnInitializedAsync() => await Refresh();
  private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); }
  private async Task Navigate(string dest) { tab=dest; if(dest is "Statistics" or "Training" or "Challenges" or "Home") await Refresh(); }
- private static readonly (string Tab, string Icon, string Label)[] NavItems = [("Home","home","Home"),("Play","dart","Play"),("Training","crosshair","Training"),("Challenges","star","Goals"),("Statistics","chart","Stats")];
+ // Bottom navigation with one accent per tab (BikeTa colours, "r,g,b").
+ private static readonly (string Tab, string Icon, string Label, string Accent)[] NavItems = [("Home","home","Home","78,210,160"),("Play","dart","Play","242,92,84"),("Training","crosshair","Training","78,210,160"),("Challenges","star","Goals","166,107,242"),("Statistics","chart","Stats","61,155,233")];
+ /// <summary>Sub page header (BikeTa PageHeaderView): icon badge in the tab accent, title and one-line description.</summary>
+ private (string Icon, string Accent, string Title, string Text) PageInfo => tab switch
+ {
+   "Play" => ("dart", "242,92,84", Session.Current is null || showSetup ? "Play" : GameRules.Name(Session.Current.Snapshot.Settings.Kind), Session.Current is null || showSetup ? "Pick a game, players and DartBots" : "Match in progress"),
+   "Training" => ("crosshair", "78,210,160", "Training", "Drills for triples, doubles and bull"),
+   "Challenges" => ("star", "166,107,242", "Goals", "Today's challenges"),
+   "Statistics" => ("chart", "61,155,233", "Statistics", "History, winners and hit rate"),
+   _ => ("sliders", "158,172,184", "Settings", "Privacy, ads and app info")
+ };
+ private int TodayDarts => trainingHistory.Where(x=>x.PlayedUtc.StartsWith(DateTimeOffset.Now.ToString("yyyy-MM-dd"))).Sum(x=>x.Darts);
  private bool HasActiveMatch => Session.Current is not null && !Session.Current.Snapshot.IsFinished;
  private string HitRate { get { var d=trainingHistory.Sum(x=>x.Darts); return d==0 ? "0%" : (100.0*trainingHistory.Sum(x=>x.Score)/d).ToString("F0")+"%"; } }
  private void OpenSetup() { tab="Play"; showSetup=true; }
