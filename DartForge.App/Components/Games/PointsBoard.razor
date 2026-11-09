@@ -7,7 +7,7 @@
 <div class="round-banner">
   <Icon Name="@(countUp ? "flag" : "star")" Size="30" Class="rb-icon" />
   <div class="rb-target">@(countUp ? goal.ToString() : $"{Math.Min(Snap.Round, TotalRounds)}/{TotalRounds}")</div>
-  <div class="rb-label">@(countUp ? "race to" : "rounds")</div>
+  <div class="rb-label">@(countUp ? L("Gameplay_RaceTo") : L("Gameplay_RoundsLabel"))</div>
 </div>
 <div class="@CardsClass">
   @for (int i = 0; i < Snap.Players.Count; i++)

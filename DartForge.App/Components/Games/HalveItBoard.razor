@@ -4,8 +4,8 @@
 }
 <div class="round-banner">
   <Icon Name="half" Size="30" Class="rb-icon" />
-  <div class="rb-target">@target.Label</div>
-  <div class="rb-label">Miss all 3 → ½</div>
+  <div class="rb-target">@Loc.TargetLabel(target)</div>
+  <div class="rb-label">@L("Gameplay_HalveItHint")</div>
 </div>
 <div class="target-path">
   @for (int r = 1; r <= TotalRounds; r++)
@@ -22,7 +22,7 @@
     <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()">
       @if (last is not null)
       {
-        <div class="tag @(halved ? "bad" : "good")"><Icon Name="@(halved ? "half" : "check")" Size="12" /> @(halved ? "halved" : Signed(last.Score))</div>
+        <div class="tag @(halved ? "bad" : "good")"><Icon Name="@(halved ? "half" : "check")" Size="12" /> @(halved ? L("Gameplay_Halved") : Signed(last.Score))</div>
       }
     </PlayerCard>
   }

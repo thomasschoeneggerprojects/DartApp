@@ -1,5 +1,6 @@
 using DartForge.Core.Engine;
 using DartForge.Core.Models;
+using DartForge.Localization;
 namespace DartForge.App.Services;
 
 /// <summary>One seat in the setup screen: a human or a DartBot with its own level.</summary>
@@ -10,7 +11,7 @@ public sealed class PlayerSlot
     public int Level { get; set; } = 10;
 }
 
-public sealed class GameSession
+public sealed class GameSession(ILocalizationService loc)
 {
     private GameSettings? _lastSettings;
     private List<PlayerSlot> _lastSlots = new();
@@ -22,7 +23,7 @@ public sealed class GameSession
     public void Start(GameSettings config, string player, bool bot, int botLevel = 10)
     {
         var slots = new List<PlayerSlot> { new() { Name = player } };
-        if (bot) slots.Add(new PlayerSlot { Name = "DartBot", IsBot = true, Level = botLevel });
+        if (bot) slots.Add(new PlayerSlot { Name = loc.GetString("Players_BotPlaceholder"), IsBot = true, Level = botLevel });
         Start(config, slots);
     }
 
@@ -37,7 +38,8 @@ public sealed class GameSession
         var players = new List<PlayerInfo>();
         foreach (var s in list)
         {
-            var fallback = s.IsBot ? $"DartBot {++bots}" : $"Player {++humans}";
+            // Default names are localized once at match start and then stay fixed: player names are data, never re-translated.
+            var fallback = s.IsBot ? loc.GetString("Players_DefaultBotName", ++bots) : loc.GetString("Players_DefaultName", ++humans);
             var name = string.IsNullOrWhiteSpace(s.Name) ? fallback : s.Name.Trim();
             if (s.IsBot) name = $"{name} · Lv{s.Level}";
             var info = PlayerInfo.Create(name, s.IsBot);

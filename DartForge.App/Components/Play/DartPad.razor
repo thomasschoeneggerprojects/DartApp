@@ -1,3 +1,4 @@
+@inherits LocalizedComponentBase
 @* Full keypad: multiplier + 1-20 + 25/Bull + Miss. *@
 @if (FixedMultiplier is null)
 {
@@ -9,7 +10,7 @@
 }
 else
 {
-  <div class="pad-hint">@(FixedMultiplier == 2 ? "D ×2 — tap the number" : "T ×3 — tap the number")</div>
+  <div class="pad-hint">@(FixedMultiplier == 2 ? L("Gameplay_DoubleTapNumber") : L("Gameplay_TripleTapNumber"))</div>
 }
 <div class="number-grid">
   @for (int n = 1; n <= 20; n++)
@@ -21,7 +22,7 @@ else
 <div class="quick-row">
   @if (Mult != 3 && FixedMultiplier != 2) { <button class="@(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 1)">25</button> }
   @if (Mult != 3) { <button class="bull-btn @(Highlight?.Contains(25) == true ? "hl" : "")" disabled="@Disabled" @onclick="() => Fire(25, 2)"><Icon Name="target" Size="16" /> BULL</button> }
-  <button class="miss-btn" disabled="@Disabled" @onclick="() => Fire(0)"><Icon Name="miss" Size="16" /> MISS</button>
+  <button class="miss-btn" disabled="@Disabled" @onclick="() => Fire(0)"><Icon Name="miss" Size="16" /> @L("Gameplay_MissButton")</button>
 </div>
 @code {
   [Parameter] public EventCallback<DartHit> OnThrow { get; set; }

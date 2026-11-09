@@ -98,7 +98,7 @@ public sealed class DartGame
         player.DartsThrown += 3; player.Visits++;
         _visits.Add(new Visit(player.Player.Id, _round, Array.Empty<DartHit>(), score, bust, DateTimeOffset.UtcNow));
         if (player.Score == 0) AwardLeg(); else Advance();
-        return new GameEvent(bust ? "Bust" : "Visit saved", _winner);
+        return new GameEvent(bust ? "Bust" : "Visit saved", _winner, bust ? GameMessageCode.Bust : GameMessageCode.VisitSaved);
     }
 
     private bool IsBust()
@@ -119,26 +119,26 @@ public sealed class DartGame
             case GameKind.X01:
                 if (!p.Opened)
                 {
-                    if (hit.Segment == 0 || Settings.In == InRule.Double && hit.Multiplier != 2 || Settings.In == InRule.Master && hit.Multiplier < 2) return new GameEvent("Not opened yet");
+                    if (hit.Segment == 0 || Settings.In == InRule.Double && hit.Multiplier != 2 || Settings.In == InRule.Master && hit.Multiplier < 2) return new GameEvent("Not opened yet", Code: GameMessageCode.NotOpened);
                     p.Opened = true;
                 }
                 p.Score -= hit.Score;
-                if (!IsBust() && p.Score == 0) return new GameEvent("Checkout!", p.Player.Id);
+                if (!IsBust() && p.Score == 0) return new GameEvent("Checkout!", p.Player.Id, GameMessageCode.Checkout);
                 break;
             case GameKind.Cricket:
             case GameKind.CutThroatCricket:
             case GameKind.NoScoreCricket:
                 ApplyCricket(p, hit);
-                if (CricketWon(p)) return new GameEvent("All closed — game shot!", p.Player.Id);
+                if (CricketWon(p)) return new GameEvent("All closed — game shot!", p.Player.Id, GameMessageCode.CricketAllClosed);
                 break;
             case GameKind.AroundTheClock:
                 if (target!.Matches(hit)) p.Score++;
-                if (p.Score >= 20) return new GameEvent("Around the clock complete!", p.Player.Id);
+                if (p.Score >= 20) return new GameEvent("Around the clock complete!", p.Player.Id, GameMessageCode.AroundTheClockComplete);
                 break;
             case GameKind.Shanghai:
                 if (target!.Matches(hit)) p.Score += hit.Score;
                 var onTarget = _pending.Where(target.Matches).Select(d => d.Multiplier).ToHashSet();
-                if (onTarget.SetEquals([1, 2, 3])) return new GameEvent("SHANGHAI!", p.Player.Id);
+                if (onTarget.SetEquals([1, 2, 3])) return new GameEvent("SHANGHAI!", p.Player.Id, GameMessageCode.Shanghai);
                 break;
             case GameKind.HalveIt:
             case GameKind.Bob27:
@@ -146,11 +146,13 @@ public sealed class DartGame
                 break;
             case GameKind.CountUp:
                 p.Score += hit.Score;
-                if (p.Score >= Settings.StartScore) return new GameEvent("Target reached!", p.Player.Id);
+                if (p.Score >= Settings.StartScore) return new GameEvent("Target reached!", p.Player.Id, GameMessageCode.TargetReached);
                 break;
             default: p.Score += hit.Score; break;
         }
-        return new GameEvent(hit.Segment == 0 ? "Miss" : $"{hit.Label} recorded");
+        return hit.Segment == 0
+            ? new GameEvent("Miss", Code: GameMessageCode.Miss)
+            : new GameEvent($"{hit.Label} recorded", Code: GameMessageCode.DartRecorded, Subject: hit.Label);
     }
 
     private void ApplyCricket(State player, DartHit hit)
@@ -183,15 +185,18 @@ public sealed class DartGame
         var p = _players[_active];
         var target = CurrentTarget;
         var message = result.Message;
-        if (bust) { p.Score = _visitStartScore; p.Opened = _visitStartOpened; message = "Bust!"; }
+        // Display-only message data; scoring below is unaffected by it.
+        var code = result.Code; var value = result.Value; var subject = result.Subject;
+        if (bust) { p.Score = _visitStartScore; p.Opened = _visitStartOpened; message = "Bust!"; code = GameMessageCode.Bust; }
         if (Settings.Kind == GameKind.HalveIt && result.WinnerId == null && !_pending.Any(target!.Matches))
         {
-            p.Score /= 2; message = "Target missed — score halved";
+            p.Score /= 2; message = "Target missed — score halved"; code = GameMessageCode.HalveItHalved;
         }
         if (Settings.Kind == GameKind.Bob27 && !_pending.Any(target!.Matches))
         {
             p.Score -= GameRules.Bob27Value(_round); message = $"No double — minus {GameRules.Bob27Value(_round)}";
-            if (p.Score <= 0) { p.Eliminated = true; message = $"{p.Player.Name} is out!"; }
+            code = GameMessageCode.Bob27NoDouble; value = GameRules.Bob27Value(_round); subject = null;
+            if (p.Score <= 0) { p.Eliminated = true; message = $"{p.Player.Name} is out!"; code = GameMessageCode.PlayerOut; subject = p.Player.Name; }
         }
         var raw = _pending.Sum(d => d.Score);
         p.DartsThrown += _pending.Count; p.Visits++;
@@ -199,10 +204,10 @@ public sealed class DartGame
         var visitScore = Settings.Kind == GameKind.X01 ? raw : p.Score - _visitStartScore;
         _visits.Add(new Visit(p.Player.Id, _round, _pending.ToArray(), visitScore, bust, DateTimeOffset.UtcNow));
         _pending.Clear();
-        if (result.WinnerId != null) { AwardLeg(); return new GameEvent(message, _winner); }
-        if (_players.All(x => x.Eliminated)) { AwardLegTo(Leader()); return new GameEvent(message, _winner); }
+        if (result.WinnerId != null) { AwardLeg(); return new GameEvent(message, _winner, code, value, subject); }
+        if (_players.All(x => x.Eliminated)) { AwardLegTo(Leader()); return new GameEvent(message, _winner, code, value, subject); }
         Advance();
-        return new GameEvent(message, _winner);
+        return new GameEvent(message, _winner, code, value, subject);
     }
 
     private State Leader() => Settings.Kind == GameKind.CutThroatCricket ? _players.MinBy(p => p.Score)! : _players.MaxBy(p => p.Score)!;

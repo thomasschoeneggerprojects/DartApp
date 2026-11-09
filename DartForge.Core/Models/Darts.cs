@@ -21,7 +21,20 @@ public sealed record PlayerInfo(Guid Id, string Name, bool IsBot = false)
 }
 /// <summary>A completed visit. For X01 <see cref="Score"/> is the raw visit total; for all other games it is the change of the player's game score.</summary>
 public sealed record Visit(Guid PlayerId, int Round, IReadOnlyList<DartHit> Darts, int Score, bool Bust, DateTimeOffset Timestamp);
-public sealed record GameEvent(string Message, Guid? WinnerId = null);
+/// <summary>
+/// Culture-independent identifier of a gameplay message. The UI translates it; <see cref="GameEvent.Message"/> keeps the
+/// original English text for logs and backward compatibility. Never persisted as display text.
+/// </summary>
+public enum GameMessageCode
+{
+    None, DartRecorded, Miss, NotOpened, Bust, VisitSaved, Checkout, CricketAllClosed, AroundTheClockComplete,
+    Shanghai, TargetReached, HalveItHalved, Bob27NoDouble, PlayerOut
+}
+/// <summary>
+/// Result of a throw. <see cref="Code"/> plus <see cref="Value"/> (a number, e.g. Bob's 27 penalty) and <see cref="Subject"/>
+/// (a dart label or player name) let the UI build a localized message.
+/// </summary>
+public sealed record GameEvent(string Message, Guid? WinnerId = null, GameMessageCode Code = GameMessageCode.None, int Value = 0, string? Subject = null);
 public sealed record PlayerSnapshot(Guid Id, string Name, int Score, int Legs, int Sets, int DartsThrown, int Visits, int TotalScored, int CricketMarks, bool IsBot,
     IReadOnlyDictionary<int, int>? Marks = null, bool Eliminated = false, bool Opened = true)
 {

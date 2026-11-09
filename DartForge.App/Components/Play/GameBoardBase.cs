@@ -1,10 +1,11 @@
 using DartForge.Core.Engine;
 using DartForge.Core.Models;
+using DartForge.Localization;
 using Microsoft.AspNetCore.Components;
 namespace DartForge.App.Components.Play;
 
 /// <summary>Shared parameters and helpers for the game-specific boards.</summary>
-public abstract class GameBoardBase : ComponentBase
+public abstract class GameBoardBase : LocalizedComponentBase
 {
     [Parameter, EditorRequired] public DartGame Game { get; set; } = default!;
     [Parameter, EditorRequired] public GameSnapshot Snap { get; set; } = default!;
@@ -20,8 +21,9 @@ public abstract class GameBoardBase : ComponentBase
     protected Visit? VisitOf(Guid playerId, int round) => Snap.Visits.LastOrDefault(v => v.PlayerId == playerId && v.Round == round);
     protected IEnumerable<Visit> VisitsOf(Guid playerId) => Snap.Visits.Where(v => v.PlayerId == playerId);
     protected Task Throw(DartHit hit) => OnThrow.InvokeAsync(hit);
-    protected static string Avg(PlayerSnapshot p) => p.DartsThrown == 0 ? "0.0" : (p.TotalScored * 3.0 / p.DartsThrown).ToString("F1");
-    protected static string Role(PlayerSnapshot p, int index) => p.IsBot ? "DARTBOT" : $"PLAYER {index + 1}";
+    /// <summary>Three-dart average, formatted for the UI culture (45.8 / 45,8). Calculation unchanged.</summary>
+    protected string Avg(PlayerSnapshot p) => Loc.FormatNumber(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown, 1);
+    protected string Role(PlayerSnapshot p, int index) => (p.IsBot ? L("Players_BotPlaceholder") : L("Players_DefaultName", index + 1)).ToUpper(Loc.CurrentCulture);
     /// <summary>More than four players: boards switch to a denser layout.</summary>
     protected bool Compact => Snap.Players.Count > 4;
     protected string CardsClass => Snap.Players.Count switch { <= 2 => "scorecards", <= 4 => "scorecards four", _ => "scorecards compact" };

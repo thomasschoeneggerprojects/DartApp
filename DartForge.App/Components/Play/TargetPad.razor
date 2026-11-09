@@ -1,3 +1,4 @@
+@inherits LocalizedComponentBase
 @* Big one-tap buttons for target games, with an optional full keypad for exact entry. *@
 @if (!fullPad)
 {
@@ -10,7 +11,7 @@
       </button>
     }
     <button class="target-btn miss" disabled="@Disabled" @onclick="() => OnThrow.InvokeAsync(DartHit.Miss)">
-      <Icon Name="miss" Size="30" /><small>@MissLabel</small>
+      <Icon Name="miss" Size="30" /><small>@(MissLabel ?? L("Gameplay_Miss"))</small>
     </button>
   </div>
 }
@@ -18,12 +19,13 @@ else
 {
   <DartPad OnThrow="OnThrow" Disabled="Disabled" Highlight="TargetSet" />
 }
-<button class="link-btn" @onclick="() => fullPad = !fullPad"><Icon Name="@(fullPad ? "target" : "keypad")" Size="14" /> @(fullPad ? "Target buttons" : "Other segment")</button>
+<button class="link-btn" @onclick="() => fullPad = !fullPad"><Icon Name="@(fullPad ? "target" : "keypad")" Size="14" /> @(fullPad ? L("Gameplay_TargetButtons") : L("Gameplay_OtherSegment"))</button>
 @code {
   [Parameter, EditorRequired] public TargetInfo Target { get; set; } = default!;
   [Parameter] public EventCallback<DartHit> OnThrow { get; set; }
   [Parameter] public int[] Multipliers { get; set; } = [1, 2, 3];
-  [Parameter] public string MissLabel { get; set; } = "Miss";
+  /// <summary>Optional custom label for the miss button; defaults to the localized "Miss".</summary>
+  [Parameter] public string? MissLabel { get; set; }
   [Parameter] public bool Disabled { get; set; }
   private bool fullPad;
   private ISet<int>? TargetSet => Target.Segment is int seg ? new HashSet<int> { seg } : null;

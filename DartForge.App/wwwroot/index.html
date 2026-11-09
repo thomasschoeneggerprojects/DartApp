@@ -43,6 +43,8 @@
 <div id="app"></div>
 <script>
 window.dartIntro={t0:performance.now(),elapsed:function(){return performance.now()-this.t0;}};
+// Called by Main.razor when the UI language changes (used for hyphenation of long translated words).
+window.dartLang=function(l){document.documentElement.lang=l;};
 (function(){
   var app=document.getElementById('app');
   var mo=new MutationObserver(function(){

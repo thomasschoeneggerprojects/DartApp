@@ -14,6 +14,7 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - Landing page (animated dartboard), inline SVG icon set on all buttons, simplified match views, 1–8 players (humans and DartBots with individual levels)
 - App icon + splash from `Resources/AppIcon` and `Resources/Splash`
 - xUnit starter tests
+- UI localization (English, German, Spanish) with OS language detection, Settings language selector, runtime switching without restart, culture-aware number/percent formatting and resource validation tests (`DartForge.Localization`)
 
 ## Not complete / known limitations
 - **Not all requested games**: Killer, Baseball, Golf, 21, Scram, Gotcha, etc. are not yet implemented.
@@ -23,7 +24,7 @@ This package is a **source-code MVP**, not the complete feature set from the mas
 - DartBot is rudimentary and does not model a physics-accurate dartboard or calibrate realistic averages.
 - Training currently records hits/misses, without detailed darts, XP or individual training challenges.
 - Offline daily goals are based on local training history, not a full challenge or achievement engine.
-- No actual tournaments, caller voices, sound files, full localization, heatmaps, backup/import/export.
+- No actual tournaments, caller voices, sound files, heatmaps, backup/import/export.
 - Ads need a real AdMob account: create app + banner unit + a GDPR consent message, then swap the test ids.
 - Broader device coverage, lifecycle stress testing, and release signing remain to be completed.
 

@@ -35,7 +35,7 @@
 @if (CanInput)
 {
   <article class="panel throw-panel">
-    <VisitDarts Darts="PendingDarts" Good="IsCricketHit" Name="@Active.Name" Hint="tap a number ↑" />
+    <VisitDarts Darts="PendingDarts" Good="IsCricketHit" Name="@Active.Name" Hint="@L("Gameplay_TapNumber")" />
     <div class="multiplier">
       <button class="@(multiplier==1?"picked":"")" @onclick="() => multiplier = 1">S</button>
       <button class="@(multiplier==2?"picked":"")" @onclick="() => multiplier = 2">D ×2</button>

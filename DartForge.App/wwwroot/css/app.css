@@ -356,3 +356,18 @@ nav button.nav-active,nav .nav-active{color:rgb(var(--acc));background:rgba(var(
 /* Play setup: game buttons left-aligned (icon + name start at the left edge) */
 .mode-btn{justify-content:flex-start;text-align:left}
 .panel.setup .control-row .icon-btn{justify-content:flex-start}
+
+/* ---- Localization (en/de/es): longer translations wrap or truncate instead of overlapping; font sizes unchanged ---- */
+nav button{min-width:0}
+nav small{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mode-btn,.icon-btn,.quick-chip,.primary,.subtle,.link-btn,.target-btn small,.ch-text b,.ch-text small,.wk-values small,.landing-stats small,.rules-box,.notice,.challenge span,.history-row span{overflow-wrap:anywhere;hyphens:auto}
+.mode-btn{min-width:0}
+.icon-btn.wide{min-width:0}
+.hh-brand small{overflow-wrap:anywhere}
+.opt-row select,.lang-select{text-overflow:ellipsis}
+/* Settings: language selector, styled like the existing option selects */
+.lang-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+.lang-label{display:inline-flex;align-items:center;gap:6px;font-weight:700;flex:none}
+.lang-label .ico{color:#4ed2a0}
+.lang-select{flex:1 1 180px;min-width:0}
+.lang-detected{margin:4px 0 10px;font-size:12px}

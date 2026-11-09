@@ -1,0 +1,47 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "DartForge.Localization/1.0.0": {
+        "dependencies": {
+          "DartForge.Core": "1.0.0"
+        },
+        "runtime": {
+          "DartForge.Localization.dll": {}
+        },
+        "resources": {
+          "de/DartForge.Localization.resources.dll": {
+            "locale": "de"
+          },
+          "es/DartForge.Localization.resources.dll": {
+            "locale": "es"
+          }
+        }
+      },
+      "DartForge.Core/1.0.0": {
+        "runtime": {
+          "DartForge.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "DartForge.Localization/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "DartForge.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

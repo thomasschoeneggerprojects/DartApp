@@ -1,12 +1,13 @@
+@inherits LocalizedComponentBase
 @using DartForge.App.Components.Games
 @* Live match screen: a slim top bar + the board that fits the selected game. *@
 <div class="match-bar">
-  <button class="icon-btn" @onclick="OnNew" title="Back to setup"><Icon Name="back" /></button>
-  <div class="mb-title"><Icon Name="@Icon.ForGame(Snap.Settings.Kind)" Size="18" /> @GameRules.Name(Snap.Settings.Kind)</div>
+  <button class="icon-btn" @onclick="OnNew" title="@L("Gameplay_BackToSetup")"><Icon Name="back" /></button>
+  <div class="mb-title"><Icon Name="@Icon.ForGame(Snap.Settings.Kind)" Size="18" /> @Loc.GameName(Snap.Settings.Kind)</div>
   <span class="pill">@RoundLabel</span>
-  <button class="icon-btn @(showRules ? "on" : "")" @onclick="() => showRules = !showRules" title="Rules"><Icon Name="help" /></button>
+  <button class="icon-btn @(showRules ? "on" : "")" @onclick="() => showRules = !showRules" title="@L("Common_Rules")"><Icon Name="help" /></button>
 </div>
-@if (showRules) { <p class="rules-box">@GameRules.Rules(Snap.Settings.Kind)</p> }
+@if (showRules) { <p class="rules-box">@Loc.GameRulesText(Snap.Settings.Kind)</p> }
 @if (Snap.Players.Count > 2 && !Snap.IsFinished)
 {
   <div class="turn-order">
@@ -19,7 +20,7 @@
 }
 @if (Snap.IsFinished)
 {
-  <div class="success"><Icon Name="trophy" Size="22" /> @(Snap.Players.FirstOrDefault(x => x.Id == Snap.WinnerId)?.Name ?? "Game over") @(Snap.WinnerId is null ? "" : "wins!")</div>
+  <div class="success"><Icon Name="trophy" Size="22" /> @WinnerText</div>
 }
 
 @switch (Snap.Settings.Kind)
@@ -54,13 +55,13 @@
   @if (Snap.Players[Snap.ActivePlayer].IsBot)
   {
     <article class="panel throw-panel bot-panel">
-      <VisitDarts Darts="Game.Pending" Name="@Snap.Players[Snap.ActivePlayer].Name" IsBot="true" Hint="@(BotRunning ? "throwing…" : null)" />
-      @if (!BotRunning) { <button class="primary full" @onclick="OnBot"><Icon Name="play" Size="16" /> LET DARTBOT THROW</button> }
+      <VisitDarts Darts="Game.Pending" Name="@Snap.Players[Snap.ActivePlayer].Name" IsBot="true" Hint="@(BotRunning ? L("Gameplay_BotThrowing") : null)" />
+      @if (!BotRunning) { <button class="primary full" @onclick="OnBot"><Icon Name="play" Size="16" /> @L("Gameplay_LetBotThrow")</button> }
     </article>
   }
   <div class="control-row">
-    <button class="icon-btn wide" disabled="@(!Game.CanUndo || BotRunning)" @onclick="OnUndo"><Icon Name="undo" /> Undo</button>
-    <button class="icon-btn wide" disabled="@(!Game.CanRedo || BotRunning)" @onclick="OnRedo"><Icon Name="redo" /> Redo</button>
+    <button class="icon-btn wide" disabled="@(!Game.CanUndo || BotRunning)" @onclick="OnUndo"><Icon Name="undo" /> @L("Gameplay_Undo")</button>
+    <button class="icon-btn wide" disabled="@(!Game.CanRedo || BotRunning)" @onclick="OnRedo"><Icon Name="redo" /> @L("Gameplay_Redo")</button>
   </div>
   @if (!string.IsNullOrEmpty(Message)) { <p class="notice">@Message</p> }
 }
@@ -72,10 +73,10 @@ else
       <div class="history-row"><span><Icon Name="@(p.Id == Snap.WinnerId ? "trophy" : p.IsBot ? "bot" : "user")" Size="16" /> @p.Name</span><strong>@ResultText(p)</strong></div>
     }
     <div class="control-row">
-      <button class="icon-btn wide" disabled="@(!Game.CanUndo)" @onclick="OnUndo"><Icon Name="undo" /> Undo</button>
-      <button class="primary wide" @onclick="OnRematch"><Icon Name="refresh" Size="18" /> Rematch</button>
+      <button class="icon-btn wide" disabled="@(!Game.CanUndo)" @onclick="OnUndo"><Icon Name="undo" /> @L("Gameplay_Undo")</button>
+      <button class="primary wide" @onclick="OnRematch"><Icon Name="refresh" Size="18" /> @L("Gameplay_Rematch")</button>
     </div>
-    <button class="subtle full" @onclick="OnNew"><Icon Name="sliders" Size="18" /> New game</button>
+    <button class="subtle full" @onclick="OnNew"><Icon Name="sliders" Size="18" /> @L("Gameplay_NewGame")</button>
   </article>
 }
 @code {
@@ -94,8 +95,12 @@ else
   private bool HumanCanThrow => !Snap.IsFinished && !Snap.Players[Snap.ActivePlayer].IsBot && !BotRunning;
 
   private string RoundLabel => GameRules.IsRoundLimited(Snap.Settings.Kind)
-    ? $"R {Math.Min(Snap.Round, GameRules.TotalRounds(Snap.Settings))}/{GameRules.TotalRounds(Snap.Settings)}"
-    : $"R {Snap.Round}";
+    ? L("Gameplay_RoundOf", Math.Min(Snap.Round, GameRules.TotalRounds(Snap.Settings)), GameRules.TotalRounds(Snap.Settings))
+    : L("Gameplay_Round", Snap.Round);
+
+  private string WinnerText => Snap.Players.FirstOrDefault(x => x.Id == Snap.WinnerId)?.Name is { } winner
+    ? L("Gameplay_PlayerWins", winner)
+    : L("Gameplay_GameOver");
 
   private IEnumerable<PlayerSnapshot> Standings => Snap.Settings.Kind switch
   {
@@ -105,10 +110,10 @@ else
 
   private string ResultText(PlayerSnapshot p) => Snap.Settings.Kind switch
   {
-    GameKind.X01 => p.Score == 0 ? $"Ø {(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown):F1}" : $"{p.Score} left",
+    GameKind.X01 => p.Score == 0 ? L("Gameplay_Average", Loc.FormatNumber(p.DartsThrown == 0 ? 0 : p.TotalScored * 3.0 / p.DartsThrown, 1)) : L("Gameplay_Remaining", p.Score),
     GameKind.NoScoreCricket => $"{GameRules.CricketNumbers.Count(n => p.MarksOn(n) >= 3)}/7",
     GameKind.AroundTheClock => $"{p.Score}/20",
-    GameKind.Bob27 when p.Eliminated => $"{p.Score} · out",
-    _ => $"{p.Score}"
+    GameKind.Bob27 when p.Eliminated => L("Gameplay_ScoreOut", p.Score),
+    _ => Loc.FormatInteger(p.Score)
   };
 }

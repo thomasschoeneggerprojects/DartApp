@@ -13,7 +13,7 @@
   {
     var p = Snap.Players[i];
     var index = i;
-    <PlayerCard Player="p" Active="IsActive(i)" Out="p.Eliminated" Value="@p.Score.ToString()" ValueClass="@(p.Score <= 0 ? "neg" : "")" Sub="@(p.Eliminated ? "OUT" : null)">
+    <PlayerCard Player="p" Active="IsActive(i)" Out="p.Eliminated" Value="@p.Score.ToString()" ValueClass="@(p.Score <= 0 ? "neg" : "")" Sub="@(p.Eliminated ? L("Gameplay_Out") : null)">
       @if (IsActive(index) || Snap.Players.Count <= 2)
       {
         <div class="bob-ladder">
@@ -31,7 +31,7 @@
 {
   <article class="panel throw-panel">
     <VisitDarts Darts="PendingDarts" Good="target.Matches" Name="@Active.Name" />
-    <TargetPad Target="target" OnThrow="OnThrow" Multipliers="DoubleOnly" MissLabel="Miss" />
+    <TargetPad Target="target" OnThrow="OnThrow" Multipliers="DoubleOnly" />
   </article>
 }
 @code {

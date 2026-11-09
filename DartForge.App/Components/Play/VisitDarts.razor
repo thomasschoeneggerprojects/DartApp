@@ -1,3 +1,4 @@
+@inherits LocalizedComponentBase
 @* Who is throwing + the three dart slots of the current visit. *@
 @if (Name is not null)
 {
@@ -15,7 +16,7 @@
       var d = Darts[i];
       var good = Good?.Invoke(d);
       <span class="dart-slot filled @(good == true ? "good" : d.Segment == 0 || good == false ? "bad" : "")">
-        <Icon Name="@(d.Segment == 0 ? "miss" : good == true ? "check" : "dart")" Size="14" /> @d.Label
+        <Icon Name="@(d.Segment == 0 ? "miss" : good == true ? "check" : "dart")" Size="14" /> @Loc.DartLabel(d)
       </span>
     }
     else

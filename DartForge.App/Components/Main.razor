@@ -1,7 +1,10 @@
+@using Microsoft.JSInterop
 @inject GameSession Session
 @inject LocalStore Store
 @inject DartBot Bot
 @inject AdState Ads
+@inject IJSRuntime JS
+@inherits LocalizedComponentBase
 @if (showIntro)
 {
   <Intro OnReveal="() => introRevealed = true" OnFinished="() => showIntro = false" />
@@ -13,12 +16,12 @@
 {
   var header = PageInfo;
   <header class="page-header" style="--acc:@header.Accent">
-    <button class="ph-back" @onclick='() => Navigate("Home")' title="Back"><Icon Name="back" Size="20" /></button>
+    <button class="ph-back" @onclick='() => Navigate("Home")' title="@L("Common_Back")"><Icon Name="back" Size="20" /></button>
     <span class="ph-badge"><Icon Name="@header.Icon" Size="22" /></span>
     <span class="ph-text"><b>@header.Title</b><small>@header.Text</small></span>
     @if (tab != "Settings")
     {
-      <button class="ph-btn" @onclick='() => Navigate("Settings")' title="Settings"><Icon Name="sliders" Size="20" /></button>
+      <button class="ph-btn" @onclick='() => Navigate("Settings")' title="@L("Common_Settings")"><Icon Name="sliders" Size="20" /></button>
     }
   </header>
 }
@@ -37,137 +40,195 @@ else if (tab == "Play")
       @foreach (var kind in Enum.GetValues<GameKind>())
       {
         var k = kind;
-        <button class="mode-btn @(selectedKind == k ? "picked" : "")" @onclick="() => selectedKind = k"><span><Icon Name="@Icon.ForGame(k)" Size="18" /></span>@GameRules.Name(k)</button>
+        <button class="mode-btn @(selectedKind == k ? "picked" : "")" @onclick="() => selectedKind = k"><span><Icon Name="@Icon.ForGame(k)" Size="18" /></span>@Loc.GameName(k)</button>
       }
     </div>
-    <p class="rules-box"><Icon Name="help" Size="14" /> @GameRules.Rules(selectedKind)</p>
+    <p class="rules-box"><Icon Name="help" Size="14" /> @Loc.GameRulesText(selectedKind)</p>
     @switch (selectedKind)
     {
       case GameKind.X01:
         <div class="opt-row">
           <select @bind="startScore"><option>101</option><option>301</option><option>501</option><option>701</option><option>1001</option></select>
-          <select @bind="inRule"><option value="Straight">Straight in</option><option value="Double">Double in</option><option value="Master">Master in</option></select>
-          <select @bind="outRule"><option value="Double">Double out</option><option value="Straight">Straight out</option><option value="Master">Master out</option></select>
+          <select @bind="inRule">@foreach (var rule in InRules) { <option value="@rule">@L(GameText.InRuleKey(rule))</option> }</select>
+          <select @bind="outRule">@foreach (var rule in OutRules) { <option value="@rule">@L(GameText.OutRuleKey(rule))</option> }</select>
         </div>
         break;
       case GameKind.Shanghai:
-        <div class="opt-row"><select @bind="shanghaiRounds"><option value="7">7 rounds</option><option value="20">20 rounds</option></select></div>
+        <div class="opt-row"><select @bind="shanghaiRounds"><option value="7">@L("Setup_Rounds", 7)</option><option value="20">@L("Setup_Rounds", 20)</option></select></div>
         break;
       case GameKind.CountUp:
-        <div class="opt-row"><select @bind="countUpTarget"><option value="300">Race to 300</option><option value="500">Race to 500</option><option value="1000">Race to 1000</option></select></div>
+        <div class="opt-row"><select @bind="countUpTarget"><option value="300">@L("Setup_RaceTo", 300)</option><option value="500">@L("Setup_RaceTo", 500)</option><option value="1000">@L("Setup_RaceTo", 1000)</option></select></div>
         break;
       case GameKind.HighScore:
-        <div class="opt-row"><select @bind="highScoreRounds"><option value="3">3 rounds</option><option value="5">5 rounds</option><option value="7">7 rounds</option><option value="10">10 rounds</option></select></div>
+        <div class="opt-row"><select @bind="highScoreRounds"><option value="3">@L("Setup_Rounds", 3)</option><option value="5">@L("Setup_Rounds", 5)</option><option value="7">@L("Setup_Rounds", 7)</option><option value="10">@L("Setup_Rounds", 10)</option></select></div>
         break;
       case GameKind.AroundTheClock:
-        <div class="opt-row"><select @bind="atcRounds"><option value="10">Max 10 rounds</option><option value="20">Max 20 rounds</option><option value="30">Max 30 rounds</option></select></div>
+        <div class="opt-row"><select @bind="atcRounds"><option value="10">@L("Setup_MaxRounds", 10)</option><option value="20">@L("Setup_MaxRounds", 20)</option><option value="30">@L("Setup_MaxRounds", 30)</option></select></div>
         break;
     }
     <div class="players-heading"><Icon Name="users" Size="16" /> <b>@slots.Count / @GameRules.MaxPlayers</b>
-      <button class="icon-btn" disabled="@(slots.Count < 2)" @onclick="Shuffle" title="Shuffle order"><Icon Name="shuffle" Size="18" /></button></div>
+      <button class="icon-btn" disabled="@(slots.Count < 2)" @onclick="Shuffle" title="@L("Setup_ShuffleOrder")"><Icon Name="shuffle" Size="18" /></button></div>
     <div class="player-slots">
       @for (int i = 0; i < slots.Count; i++)
       {
         var slot = slots[i];
         var index = i;
         <div class="player-slot @(slot.IsBot ? "bot" : "")">
-          <button class="slot-kind" @onclick="() => slot.IsBot = !slot.IsBot" title="Human / DartBot"><Icon Name="@(slot.IsBot ? "bot" : "user")" Size="18" /></button>
-          <input @bind="slot.Name" maxlength="25" placeholder="@(slot.IsBot ? "DartBot" : $"Player {index + 1}")" />
+          <button class="slot-kind" @onclick="() => slot.IsBot = !slot.IsBot" title="@L("Setup_HumanOrBot")"><Icon Name="@(slot.IsBot ? "bot" : "user")" Size="18" /></button>
+          <input @bind="slot.Name" maxlength="25" placeholder="@(slot.IsBot ? L("Players_BotPlaceholder") : L("Players_DefaultName", index + 1))" />
           @if (slot.IsBot)
           {
-            <select class="slot-level" @bind="slot.Level" title="DartBot level">@for (int l = 1; l <= 20; l++) { var lv = l; <option value="@lv">Lv @lv</option> }</select>
+            <select class="slot-level" @bind="slot.Level" title="@L("Setup_BotLevel")">@for (int l = 1; l <= 20; l++) { var lv = l; <option value="@lv">@L("Setup_LevelOption", lv)</option> }</select>
           }
-          <button class="slot-move" disabled="@(index == 0)" @onclick="() => MoveUp(index)" title="Throw earlier"><Icon Name="up" Size="16" /></button>
-          <button class="slot-remove" disabled="@(slots.Count == 1)" @onclick="() => slots.RemoveAt(index)" title="Remove"><Icon Name="close" Size="16" /></button>
+          <button class="slot-move" disabled="@(index == 0)" @onclick="() => MoveUp(index)" title="@L("Setup_ThrowEarlier")"><Icon Name="up" Size="16" /></button>
+          <button class="slot-remove" disabled="@(slots.Count == 1)" @onclick="() => RemoveSlot(index)" title="@L("Common_Remove")"><Icon Name="close" Size="16" /></button>
         </div>
       }
     </div>
     <div class="control-row">
-      <button class="icon-btn wide" disabled="@(slots.Count >= GameRules.MaxPlayers)" @onclick="() => AddSlot(false)"><Icon Name="plus" Size="16" /><Icon Name="user" Size="16" /> Player</button>
-      <button class="icon-btn wide" disabled="@(slots.Count >= GameRules.MaxPlayers)" @onclick="() => AddSlot(true)"><Icon Name="plus" Size="16" /><Icon Name="bot" Size="16" /> DartBot</button>
+      <button class="icon-btn wide" disabled="@(slots.Count >= GameRules.MaxPlayers)" @onclick="() => AddSlot(false)"><Icon Name="plus" Size="16" /><Icon Name="user" Size="16" /> @L("Setup_AddPlayer")</button>
+      <button class="icon-btn wide" disabled="@(slots.Count >= GameRules.MaxPlayers)" @onclick="() => AddSlot(true)"><Icon Name="plus" Size="16" /><Icon Name="bot" Size="16" /> @L("Setup_AddBot")</button>
     </div>
-    <button class="primary full big-cta" @onclick="Start"><Icon Name="dart" Size="20" /> START</button>
+    <button class="primary full big-cta" @onclick="Start"><Icon Name="dart" Size="20" /> @L("Common_Start")</button>
     </article>
   }
   else
   {
-    <MatchView Game="Session.Current" Snap="Session.Current.Snapshot" BotRunning="botRunning" Message="@message"
+    <MatchView Game="Session.Current" Snap="Session.Current.Snapshot" BotRunning="botRunning" Message="@message?.Resolve(Loc)"
                OnThrow="Throw" OnBot="BotTurn" OnUndo="Undo" OnRedo="Redo" OnNew="() => showSetup = true" OnRematch="Rematch" />
   }
 }
 else if (tab == "Training")
 {
-  <h1 class="page-title"><Icon Name="crosshair" Size="26" /> Training</h1>
+  <h1 class="page-title"><Icon Name="crosshair" Size="26" /> @L("Page_Training_Title")</h1>
   <article class="panel">
     @if (!trainingActive)
     {
       <div class="opt-row">
-        <select @bind="exercise"><option value="T20">Triple 20</option><option value="D20">Double 20</option><option value="D16">Double 16</option><option value="Bull">Bull</option><option value="Random">Random triples</option></select>
-        <select @bind="trainingDarts"><option value="9">9 darts</option><option value="21">21 darts</option><option value="30">30 darts</option><option value="60">60 darts</option><option value="100">100 darts</option></select>
+        <select @bind="exercise">@foreach (var ex in Exercises) { <option value="@ex">@ExerciseName(ex)</option> }</select>
+        <select @bind="trainingDarts">@foreach (var n in TrainingDartOptions) { <option value="@n">@L("Training_Darts", n)</option> }</select>
       </div>
-      <button class="primary full big-cta" @onclick="BeginTraining"><Icon Name="play" Size="16" /> START</button>
+      <button class="primary full big-cta" @onclick="BeginTraining"><Icon Name="play" Size="16" /> @L("Common_Start")</button>
     }
     else
     {
-      <div class="training-target"><Icon Name="target" Size="28" /><strong>@currentTarget</strong></div>
+      <div class="training-target"><Icon Name="target" Size="28" /><strong>@(currentTarget == "Random" ? L("Training_Target_Random") : currentTarget)</strong></div>
       <div class="progress"><div style="width:@(100 * trainingThrown / Math.Max(1, trainingDarts))%"></div></div>
       <div class="mini center">@trainingThrown / @trainingDarts · @trainingHits <Icon Name="check" Size="12" /></div>
       <div class="target-pad cols-2">
-        <button class="target-btn m2" @onclick="() => TrainingThrow(true)"><Icon Name="check" Size="30" /><small>Hit</small></button>
-        <button class="target-btn miss" @onclick="() => TrainingThrow(false)"><Icon Name="miss" Size="30" /><small>Miss</small></button>
+        <button class="target-btn m2" @onclick="() => TrainingThrow(true)"><Icon Name="check" Size="30" /><small>@L("Training_Hit")</small></button>
+        <button class="target-btn miss" @onclick="() => TrainingThrow(false)"><Icon Name="miss" Size="30" /><small>@L("Gameplay_Miss")</small></button>
       </div>
-      <button class="icon-btn wide full" @onclick="EndTraining"><Icon Name="flag" Size="16" /> Finish</button>
+      <button class="icon-btn wide full" @onclick="EndTraining"><Icon Name="flag" Size="16" /> @L("Common_Finish")</button>
     }
   </article>
-  @if (trainingHistory.Count > 0) { <article class="panel">@foreach(var t in trainingHistory.Take(10)) { <div class="history-row"><span><Icon Name="crosshair" Size="14" /> @t.Mode</span><strong>@t.Score / @t.Darts</strong></div> }</article> }
+  @if (trainingHistory.Count > 0) { <article class="panel">@foreach(var t in trainingHistory.Take(10)) { <div class="history-row"><span><Icon Name="crosshair" Size="14" /> @ExerciseName(t.Mode)</span><strong>@t.Score / @t.Darts</strong></div> }</article> }
 }
 else if(tab == "Challenges")
 {
-  <h1 class="page-title"><Icon Name="star" Size="26" /> Today</h1>
-  <article class="panel">@foreach(var c in new[]{("Throw 21 darts",21,"dart"),("Throw 60 darts",60,"flame"),("Hit 10 targets",10,"target")}) { var progress=c.Item1.Contains("Hit")?trainingHistory.Where(x=>x.PlayedUtc.StartsWith(DateTimeOffset.Now.ToString("yyyy-MM-dd"))).Sum(x=>x.Score):trainingHistory.Where(x=>x.PlayedUtc.StartsWith(DateTimeOffset.Now.ToString("yyyy-MM-dd"))).Sum(x=>x.Darts); <div class="challenge"><span><Icon Name="@(progress >= c.Item2 ? "check" : c.Item3)" Size="16" /> @c.Item1</span><b>@Math.Min(progress,c.Item2) / @c.Item2</b><div class="progress"><div style="width:@(100*Math.Min(progress,c.Item2)/c.Item2)%"></div></div></div> }</article>
+  <h1 class="page-title"><Icon Name="star" Size="26" /> @L("Challenges_Title")</h1>
+  <article class="panel">@foreach(var c in DailyChallenges) { var progress=c.CountsHits?TodayTraining.Sum(x=>x.Score):TodayTraining.Sum(x=>x.Darts); <div class="challenge"><span><Icon Name="@(progress >= c.Goal ? "check" : c.Icon)" Size="16" /> @L(c.Key, c.Goal)</span><b>@Math.Min(progress,c.Goal) / @c.Goal</b><div class="progress"><div style="width:@(100*Math.Min(progress,c.Goal)/c.Goal)%"></div></div></div> }</article>
 }
 else if (tab == "Statistics")
 {
-  <h1 class="page-title"><Icon Name="chart" Size="26" /> Stats</h1>
+  <h1 class="page-title"><Icon Name="chart" Size="26" /> @L("Nav_Stats")</h1>
   <div class="landing-stats">
-    <div><Icon Name="trophy" /><b>@matchHistory.Count</b><small>Matches</small></div>
-    <div><Icon Name="dart" /><b>@trainingHistory.Sum(x=>x.Darts)</b><small>Training darts</small></div>
-    <div><Icon Name="crosshair" /><b>@HitRate</b><small>Hit rate</small></div>
+    <div><Icon Name="trophy" /><b>@matchHistory.Count</b><small>@L("Statistics_Matches")</small></div>
+    <div><Icon Name="dart" /><b>@trainingHistory.Sum(x=>x.Darts)</b><small>@L("Statistics_TrainingDarts")</small></div>
+    <div><Icon Name="crosshair" /><b>@HitRate</b><small>@L("Statistics_HitRate")</small></div>
   </div>
-  <article class="panel">@if(matchHistory.Count==0) { <p class="muted">No finished matches yet.</p> }@foreach(var r in matchHistory.Take(10)) { <div class="history-row"><span><Icon Name="@ModeIconName(r.Mode)" Size="14" /> @Name(r.Mode)</span><strong><Icon Name="trophy" Size="12" /> @r.Winner</strong></div> }</article>
+  <article class="panel">@if(matchHistory.Count==0) { <p class="muted">@L("Statistics_NoMatches")</p> }@foreach(var r in matchHistory.Take(10)) { <div class="history-row"><span><Icon Name="@ModeIconName(r.Mode)" Size="14" /> @Loc.GameName(r.Mode)</span><strong><Icon Name="trophy" Size="12" /> @WinnerName(r)</strong></div> }</article>
 }
-else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><article class="panel"><p><Icon Name="shield" Size="16" /> Games, training and stats work offline and stay on this device (SQLite). No account needed.</p><p><Icon Name="bolt" Size="16" /> DartTA is free thanks to a small Google AdMob banner shown at the bottom of each screen.</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> Privacy &amp; ad choices</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p></article> }
+else
+{
+  <h1 class="page-title"><Icon Name="sliders" Size="26" /> @L("Page_Settings_Title")</h1>
+  <article class="panel">
+    <label class="lang-row">
+      <span class="lang-label"><Icon Name="globe" Size="16" /> @L("Settings_Language")</span>
+      <select class="lang-select" value="@Loc.SelectedLanguage" @onchange="ChangeLanguage">
+        <option value="@AppLanguage.System">@L("Settings_SystemDefault")</option>
+        @foreach (var lang in SupportedLanguages.All) { <option value="@lang.Language" lang="@lang.Code">@lang.NativeName</option> }
+      </select>
+    </label>
+    @if (Loc.SelectedLanguage == AppLanguage.System) { <p class="muted lang-detected">@L("Settings_DetectedLanguage", Loc.ActiveLanguage.NativeName)</p> }
+    <p><Icon Name="shield" Size="16" /> @L("Settings_Offline")</p><p><Icon Name="bolt" Size="16" /> @L("Settings_Ads")</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> @L("Settings_Privacy")</button><p class="muted">Build 0.1.0 · .NET 8 MAUI</p>
+  </article>
+}
 </main>
-<nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" style="--acc:@item.Accent" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@item.Label</small></button> }</nav>
+<nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" style="--acc:@item.Accent" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@L(item.LabelKey)</small></button> }</nav>
 </div>
 }
 @code {
  private bool showIntro=true, introRevealed;
- private string tab="Home", exercise="T20", currentTarget="T20", message="";
+ private string tab="Home", exercise="T20", currentTarget="T20";
+ /// <summary>Last gameplay notice, kept as key + arguments so it re-renders in a newly selected language.</summary>
+ private LocText? message;
  private bool showSetup=true, trainingActive, botRunning;
  private int startScore=501,trainingDarts=21,trainingThrown,trainingHits,shanghaiRounds=7,countUpTarget=300,highScoreRounds=7,atcRounds=30;
  private OutRule outRule=OutRule.Double;
  private InRule inRule=InRule.Straight;
- private List<PlayerSlot> slots=new() { new PlayerSlot { Name="Player 1" }, new PlayerSlot { Name="DartBot", IsBot=true, Level=10 } };
+ private List<PlayerSlot> slots=new();
+ /// <summary>Names we generated for setup slots; while unchanged by the user they follow language switches.</summary>
+ private readonly Dictionary<PlayerSlot, LocText> autoNames=new();
+ private static readonly InRule[] InRules=[InRule.Straight, InRule.Double, InRule.Master];
+ private static readonly OutRule[] OutRules=[OutRule.Double, OutRule.Straight, OutRule.Master];
+ private static readonly string[] Exercises=["T20","D20","D16","Bull","Random"];
+ private static readonly int[] TrainingDartOptions=[9,21,30,60,100];
+ private static readonly (string Key, int Goal, string Icon, bool CountsHits)[] DailyChallenges=[("Challenges_ThrowDarts",21,"dart",false),("Challenges_ThrowDarts",60,"flame",false),("Challenges_HitTargets",10,"target",true)];
+ private string? appliedHtmlLang;
  private GameKind selectedKind=GameKind.X01;
  private List<MatchRecord> matchHistory=new(); private List<TrainingRecord> trainingHistory=new();
- protected override async Task OnInitializedAsync() => await Refresh();
+ protected override async Task OnInitializedAsync()
+ {
+   AddAutoSlot(new PlayerSlot(), new LocText("Players_DefaultName", 1));
+   AddAutoSlot(new PlayerSlot { IsBot=true, Level=10 }, new LocText("Players_BotPlaceholder"));
+   await Refresh();
+ }
+ protected override void OnLanguageChangedCore()
+ {
+   foreach (var (slot, text) in autoNames.ToList())
+   {
+     // Re-translate only names the user has not edited (they still equal the generated text of the previous language).
+     if (slot.Name == previousAutoNames.GetValueOrDefault(slot)) slot.Name = text.Resolve(Loc);
+     else autoNames.Remove(slot);
+   }
+   SnapshotAutoNames();
+ }
+ private readonly Dictionary<PlayerSlot, string> previousAutoNames=new();
+ private void SnapshotAutoNames() { previousAutoNames.Clear(); foreach (var (slot, text) in autoNames) previousAutoNames[slot]=text.Resolve(Loc); }
+ private void AddAutoSlot(PlayerSlot slot, LocText name) { slot.Name=name.Resolve(Loc); slots.Add(slot); autoNames[slot]=name; previousAutoNames[slot]=slot.Name; }
+ private void RemoveSlot(int index) { var slot=slots[index]; slots.RemoveAt(index); autoNames.Remove(slot); previousAutoNames.Remove(slot); }
+ protected override async Task OnAfterRenderAsync(bool firstRender)
+ {
+   var code=Loc.ActiveLanguage.Code;
+   if (appliedHtmlLang == code) return;
+   appliedHtmlLang=code;
+   try { await JS.InvokeVoidAsync("dartLang", code); } catch { /* script not loaded yet – lang only affects hyphenation */ }
+ }
+ private void ChangeLanguage(ChangeEventArgs e)
+ {
+   if (Enum.TryParse<AppLanguage>(e.Value?.ToString(), out var lang)) Loc.SetLanguage(lang);
+ }
  private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); }
  private async Task Navigate(string dest) { tab=dest; if(dest is "Statistics" or "Training" or "Challenges" or "Home") await Refresh(); }
  // Bottom navigation with one accent per tab (BikeTa colours, "r,g,b").
- private static readonly (string Tab, string Icon, string Label, string Accent)[] NavItems = [("Home","home","Home","78,210,160"),("Play","dart","Play","242,92,84"),("Training","crosshair","Training","78,210,160"),("Challenges","star","Goals","166,107,242"),("Statistics","chart","Stats","61,155,233")];
+ private static readonly (string Tab, string Icon, string LabelKey, string Accent)[] NavItems = [("Home","home","Nav_Home","78,210,160"),("Play","dart","Nav_Play","242,92,84"),("Training","crosshair","Nav_Training","78,210,160"),("Challenges","star","Nav_Goals","166,107,242"),("Statistics","chart","Nav_Stats","61,155,233")];
  /// <summary>Sub page header (BikeTa PageHeaderView): icon badge in the tab accent, title and one-line description.</summary>
  private (string Icon, string Accent, string Title, string Text) PageInfo => tab switch
  {
-   "Play" => ("dart", "242,92,84", Session.Current is null || showSetup ? "Play" : GameRules.Name(Session.Current.Snapshot.Settings.Kind), Session.Current is null || showSetup ? "Pick a game, players and DartBots" : "Match in progress"),
-   "Training" => ("crosshair", "78,210,160", "Training", "Drills for triples, doubles and bull"),
-   "Challenges" => ("star", "166,107,242", "Goals", "Today's challenges"),
-   "Statistics" => ("chart", "61,155,233", "Statistics", "History, winners and hit rate"),
-   _ => ("sliders", "158,172,184", "Settings", "Privacy, ads and app info")
+   "Play" => ("dart", "242,92,84", Session.Current is null || showSetup ? L("Nav_Play") : Loc.GameName(Session.Current.Snapshot.Settings.Kind), Session.Current is null || showSetup ? L("Page_Play_Setup") : L("Page_Play_Match")),
+   "Training" => ("crosshair", "78,210,160", L("Page_Training_Title"), L("Page_Training_Text")),
+   "Challenges" => ("star", "166,107,242", L("Page_Goals_Title"), L("Page_Goals_Text")),
+   "Statistics" => ("chart", "61,155,233", L("Page_Statistics_Title"), L("Page_Statistics_Text")),
+   _ => ("sliders", "158,172,184", L("Page_Settings_Title"), L("Page_Settings_Text"))
  };
- private int TodayDarts => trainingHistory.Where(x=>x.PlayedUtc.StartsWith(DateTimeOffset.Now.ToString("yyyy-MM-dd"))).Sum(x=>x.Darts);
+ // Stored timestamps are ISO strings – compare with an invariant date key so the UI culture can never affect it.
+ private IEnumerable<TrainingRecord> TodayTraining { get { var today=DateTimeOffset.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture); return trainingHistory.Where(x=>x.PlayedUtc.StartsWith(today, StringComparison.Ordinal)); } }
+ private int TodayDarts => TodayTraining.Sum(x=>x.Darts);
  private bool HasActiveMatch => Session.Current is not null && !Session.Current.Snapshot.IsFinished;
- private string HitRate { get { var d=trainingHistory.Sum(x=>x.Darts); return d==0 ? "0%" : (100.0*trainingHistory.Sum(x=>x.Score)/d).ToString("F0")+"%"; } }
+ private string HitRate { get { var d=trainingHistory.Sum(x=>x.Darts); return Loc.FormatPercent(d==0 ? 0 : 100.0*trainingHistory.Sum(x=>x.Score)/d); } }
+ private string ExerciseName(string mode) => Exercises.Contains(mode) ? L($"Training_Exercise_{mode}") : mode;
+ private string WinnerName(MatchRecord r) => r.Winner == "Unfinished" ? L("Statistics_Unfinished") : r.Winner;
  private void OpenSetup() { tab="Play"; showSetup=true; }
  private void Resume() { tab="Play"; showSetup=false; }
  private void QuickStart(GameKind k) { selectedKind=k; OpenSetup(); }
@@ -184,21 +245,22 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
    _ => new GameSettings(selectedKind)
  };
 
- private void Start() { Session.Start(BuildSettings(), slots); showSetup=false; message=""; }
+ private void Start() { Session.Start(BuildSettings(), slots); showSetup=false; message=null; }
  private void AddSlot(bool bot)
  {
    if(slots.Count>=GameRules.MaxPlayers) return;
-   slots.Add(bot ? new PlayerSlot { Name=$"DartBot {slots.Count(x=>x.IsBot)+1}", IsBot=true, Level=10 } : new PlayerSlot { Name=$"Player {slots.Count(x=>!x.IsBot)+1}" });
+   if(bot) AddAutoSlot(new PlayerSlot { IsBot=true, Level=10 }, new LocText("Players_DefaultBotName", slots.Count(x=>x.IsBot)+1));
+   else AddAutoSlot(new PlayerSlot(), new LocText("Players_DefaultName", slots.Count(x=>!x.IsBot)+1));
  }
  private void MoveUp(int i) { if(i<=0||i>=slots.Count) return; (slots[i-1], slots[i]) = (slots[i], slots[i-1]); }
  private void Shuffle() { var order=slots.OrderBy(_=>Random.Shared.Next()).ToList(); slots.Clear(); slots.AddRange(order); }
- private void Rematch() { Session.Rematch(); message=""; }
+ private void Rematch() { Session.Rematch(); message=null; }
 
  private async Task Throw(DartHit hit)
  {
    if(Session.Current is null || botRunning) return;
-   try { message=Session.Current.Throw(hit).Message; }
-   catch(Exception ex){ message=ex.Message; return; }
+   try { message=GameText.Describe(Session.Current.Throw(hit)); }
+   catch(Exception){ message=new LocText("Gameplay_InvalidThrow"); return; }
    await SaveIfFinished();
    var snap=Session.Current.Snapshot;
    if(!snap.IsFinished && snap.Players[snap.ActivePlayer].IsBot) await BotTurn();
@@ -219,7 +281,8 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
       if(Session.Current != game) break;
       var name=snap.Players[snap.ActivePlayer].Name;
       var hit=Bot.ThrowFor(game, Session.LevelOf(snap.Players[snap.ActivePlayer].Id));
-      message=$"{name}: {hit.Label} — {game.Throw(hit).Message}";
+      var label=hit.Segment==0 ? new LocText("Gameplay_MissButton") : LocText.Literal(hit.Label);
+      message=new LocText("Gameplay_BotThrow", name, label, GameText.Describe(game.Throw(hit)));
       StateHasChanged();
     }
   }
@@ -233,13 +296,13 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
  {
    var g=Session.Current; if(g is null || botRunning || !g.Undo()) return;
    while(BotUp(g) && g.CanUndo) g.Undo();
-   message="Undone";
+   message=new LocText("Gameplay_Undone");
  }
  private async Task Redo()
  {
    var g=Session.Current; if(g is null || botRunning || !g.Redo()) return;
    while(BotUp(g) && g.CanRedo) g.Redo();
-   message="Redone";
+   message=new LocText("Gameplay_Redone");
    await SaveIfFinished();
  }
  private async Task SaveIfFinished() { if(Session.Current is not null && Session.Current.Snapshot.IsFinished && !Session.Saved) { await Store.SaveMatchAsync(Session.Current.Snapshot);Session.MarkSaved();await Refresh(); } }
@@ -247,5 +310,4 @@ else { <h1 class="page-title"><Icon Name="sliders" Size="26" /> Settings</h1><ar
  private async Task TrainingThrow(bool hit){if(!trainingActive)return;trainingThrown++;if(hit)trainingHits++;if(exercise=="Random")currentTarget=$"T{Random.Shared.Next(1,21)}";if(trainingThrown>=trainingDarts)await EndTraining();}
  private async Task EndTraining(){if(!trainingActive)return;trainingActive=false;await Store.SaveTrainingAsync(exercise,trainingHits,trainingThrown);await Refresh();}
  private static string ModeIconName(string mode)=>Enum.TryParse(mode, out GameKind k) ? Icon.ForGame(k) : "target";
- private static string Name(string mode)=>Enum.TryParse<GameKind>(mode, out var k) ? GameRules.Name(k) : mode;
 }

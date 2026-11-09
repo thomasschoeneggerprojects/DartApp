@@ -1,3 +1,4 @@
+@inherits LocalizedComponentBase
 @* Home screen in the BikeTa style: hero with brand bar + greeting (animated dartboard as the hero picture),
    big choice cards with accent glow and outline, a stats card with the daily goal ring and quick-start chips. *@
 <section class="home">
@@ -15,11 +16,11 @@
     <div class="hh-overlay">
       <div class="hh-top">
         <img class="hh-logo" src="img/logo.png" alt="DartTA" />
-        <div class="hh-brand"><b>DARTTA</b><small>SCORE · TRAIN · PROGRESS</small></div>
-        <button class="hh-btn" @onclick='() => OnNavigate.InvokeAsync("Settings")' title="Settings"><Icon Name="sliders" Size="20" /></button>
+        <div class="hh-brand"><b>DARTTA</b><small>@L("Home_Slogan")</small></div>
+        <button class="hh-btn" @onclick='() => OnNavigate.InvokeAsync("Settings")' title="@L("Common_Settings")"><Icon Name="sliders" Size="20" /></button>
       </div>
-      <div class="hh-greeting">Good to see you back!</div>
-      <div class="hh-tagline">Your next 180 starts here.</div>
+      <div class="hh-greeting">@L("Home_Greeting")</div>
+      <div class="hh-tagline">@L("Home_Tagline")</div>
     </div>
   </div>
 
@@ -29,7 +30,7 @@
       <button class="choice" style="--acc:242,193,78" @onclick="OnResume">
         <span class="ch-pic"><Icon Name="play" Size="120" Stroke="1.2" /></span>
         <span class="ch-tile"><Icon Name="play" Size="26" /></span>
-        <span class="ch-text"><b>Resume match</b><small>Your game is still running – jump back in.</small></span>
+        <span class="ch-text"><b>@L("Home_Resume_Title")</b><small>@L("Home_Resume_Text")</small></span>
         <span class="ch-go"><Icon Name="back" Size="15" /></span>
       </button>
     }
@@ -46,34 +47,34 @@
           <span class="ch-pic"><Icon Name="@choice.Icon" Size="120" Stroke="1.2" /></span>
         }
         <span class="ch-tile"><Icon Name="@choice.Icon" Size="26" /></span>
-        <span class="ch-text"><b>@choice.Title</b><small>@choice.Text</small></span>
+        <span class="ch-text"><b>@L(choice.TitleKey)</b><small>@L(choice.TextKey)</small></span>
         <span class="ch-go"><Icon Name="back" Size="15" /></span>
       </button>
     }
 
     <button class="week-card" @onclick='() => OnNavigate.InvokeAsync("Statistics")'>
       <span class="wk-left">
-        <span class="wk-kicker">YOUR STATS</span>
+        <span class="wk-kicker">@L("Home_YourStats")</span>
         <span class="wk-values">
-          <span><b>@Matches</b><small>Matches</small></span>
-          <span><b>@TrainingDarts</b><small>Darts</small></span>
-          <span><b>@HitRate</b><small>Hit rate</small></span>
+          <span><b>@Matches</b><small>@L("Statistics_Matches")</small></span>
+          <span><b>@TrainingDarts</b><small>@L("Home_Darts")</small></span>
+          <span><b>@HitRate</b><small>@L("Statistics_HitRate")</small></span>
         </span>
       </span>
       <span class="wk-ring" style="--share:@GoalShare">
         <svg viewBox="0 0 84 84"><circle class="trk" cx="42" cy="42" r="37" /><circle class="arc" cx="42" cy="42" r="37" pathLength="100" /></svg>
-        <span><b>@TodayDarts</b><small>/ @DailyGoal today</small></span>
+        <span><b>@TodayDarts</b><small>@L("Home_TodayOfGoal", DailyGoal)</small></span>
       </span>
     </button>
 
-    <div class="wk-kicker qs">QUICK START</div>
+    <div class="wk-kicker qs">@L("Home_QuickStart")</div>
     <div class="quick-chips">
       @foreach (var kind in Featured)
       {
         var k = kind;
-        <button class="quick-chip" @onclick="() => OnQuick.InvokeAsync(k)"><Icon Name="@Icon.ForGame(k)" Size="18" /> @GameRules.Name(k)</button>
+        <button class="quick-chip" @onclick="() => OnQuick.InvokeAsync(k)"><Icon Name="@Icon.ForGame(k)" Size="18" /> @Loc.GameName(k)</button>
       }
-      <button class="quick-chip" @onclick="OnPlay"><Icon Name="plus" Size="18" /> All games</button>
+      <button class="quick-chip" @onclick="OnPlay"><Icon Name="plus" Size="18" /> @L("Home_AllGames")</button>
     </div>
   </div>
 </section>
@@ -92,13 +93,13 @@
   private const int DailyGoal = 60;
   private string GoalShare => Math.Clamp(TodayDarts * 100 / DailyGoal, 0, 100).ToString();
 
-  /// <summary>Choice cards: tab, icon, accent (r,g,b – BikeTa colours), title, text.</summary>
-  private static readonly (string Tab, string Icon, string Accent, string Title, string Text)[] Choices =
+  /// <summary>Choice cards: tab, icon, accent (r,g,b – BikeTa colours), title and text resource keys.</summary>
+  private static readonly (string Tab, string Icon, string Accent, string TitleKey, string TextKey)[] Choices =
   [
-    ("Play", "dart", "242,92,84", "Play", "X01, Cricket & more – up to 8 players or the DartBot."),
-    ("Training", "crosshair", "78,210,160", "Training", "Triples, doubles and bull drills with hit rate."),
-    ("Challenges", "star", "166,107,242", "Goals", "Daily challenges to keep your arm sharp."),
-    ("Statistics", "chart", "61,155,233", "Statistics", "Match history, winners and your hit rate."),
+    ("Play", "dart", "242,92,84", "Nav_Play", "Home_Play_Text"),
+    ("Training", "crosshair", "78,210,160", "Page_Training_Title", "Home_Training_Text"),
+    ("Challenges", "star", "166,107,242", "Page_Goals_Title", "Home_Goals_Text"),
+    ("Statistics", "chart", "61,155,233", "Page_Statistics_Title", "Home_Statistics_Text"),
   ];
 
   private static readonly GameKind[] Featured = [GameKind.X01, GameKind.Cricket, GameKind.AroundTheClock, GameKind.Shanghai, GameKind.HalveIt];

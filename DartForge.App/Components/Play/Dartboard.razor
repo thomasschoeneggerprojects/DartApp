@@ -1,6 +1,7 @@
+@inherits LocalizedComponentBase
 @using System.Globalization
 @* A vector dartboard drawn from the standard ring proportions. Optional highlight of one segment. *@
-<svg class="dartboard @Class" viewBox="-120 -120 240 240" role="img" aria-label="Dartboard">
+<svg class="dartboard @Class" viewBox="-120 -120 240 240" role="img" aria-label="@L("Gameplay_Dartboard")">
   <circle r="118" class="db-frame" />
   <circle r="101" class="db-wire" />
   @for (int i = 0; i < 20; i++)

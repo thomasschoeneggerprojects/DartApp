@@ -4,8 +4,8 @@
   {
     var p = Snap.Players[i];
     var route = IsActive(i) && p.Opened ? Checkout.Suggest(p.Score, DartsLeft, Snap.Settings.Out) : null;
-    <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()" Sub="@($"Ø {Avg(p)}")">
-      @if (!p.Opened) { <div class="tag warn"><Icon Name="bolt" Size="12" /> @(Snap.Settings.In == InRule.Double ? "Double in" : "Master in")</div> }
+    <PlayerCard Player="p" Active="IsActive(i)" Value="@p.Score.ToString()" Sub="@L("Gameplay_Average", Avg(p))">
+      @if (!p.Opened) { <div class="tag warn"><Icon Name="bolt" Size="12" /> @L(GameText.InRuleKey(Snap.Settings.In))</div> }
       else if (route is not null) { <div class="checkout"><Icon Name="flag" Size="12" /> @(string.Join(" ", route.Select(d => d.Label)))</div> }
     </PlayerCard>
   }
@@ -13,7 +13,7 @@
 @if (CanInput)
 {
   <article class="panel throw-panel">
-    <VisitDarts Darts="PendingDarts" Name="@Active.Name" Hint="@($"{Active.Score} left")" />
+    <VisitDarts Darts="PendingDarts" Name="@Active.Name" Hint="@L("Gameplay_Remaining", Active.Score)" />
     <DartPad OnThrow="OnThrow" Highlight="CheckoutTargets" />
   </article>
 }

@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Common_Literal" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>Atrás</value>
+  </data>
+  <data name="Common_Settings" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="Common_Start" xml:space="preserve">
+    <value>EMPEZAR</value>
+  </data>
+  <data name="Common_Finish" xml:space="preserve">
+    <value>Terminar</value>
+  </data>
+  <data name="Common_Remove" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="Common_Rules" xml:space="preserve">
+    <value>Reglas</value>
+  </data>
+  <data name="Nav_Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="Nav_Play" xml:space="preserve">
+    <value>Jugar</value>
+  </data>
+  <data name="Nav_Training" xml:space="preserve">
+    <value>Entreno</value>
+  </data>
+  <data name="Nav_Goals" xml:space="preserve">
+    <value>Metas</value>
+  </data>
+  <data name="Nav_Stats" xml:space="preserve">
+    <value>Estadísticas</value>
+  </data>
+  <data name="Page_Play_Setup" xml:space="preserve">
+    <value>Elige juego, jugadores y DartBots</value>
+  </data>
+  <data name="Page_Play_Match" xml:space="preserve">
+    <value>Partido en curso</value>
+  </data>
+  <data name="Page_Training_Title" xml:space="preserve">
+    <value>Entrenamiento</value>
+  </data>
+  <data name="Page_Training_Text" xml:space="preserve">
+    <value>Ejercicios de triples, dobles y diana</value>
+  </data>
+  <data name="Page_Goals_Title" xml:space="preserve">
+    <value>Metas</value>
+  </data>
+  <data name="Page_Goals_Text" xml:space="preserve">
+    <value>Retos de hoy</value>
+  </data>
+  <data name="Page_Statistics_Title" xml:space="preserve">
+    <value>Estadísticas</value>
+  </data>
+  <data name="Page_Statistics_Text" xml:space="preserve">
+    <value>Historial, ganadores y tasa de acierto</value>
+  </data>
+  <data name="Page_Settings_Title" xml:space="preserve">
+    <value>Ajustes</value>
+  </data>
+  <data name="Page_Settings_Text" xml:space="preserve">
+    <value>Idioma, privacidad, anuncios e información</value>
+  </data>
+  <data name="Home_Slogan" xml:space="preserve">
+    <value>PUNTÚA · ENTRENA · MEJORA</value>
+  </data>
+  <data name="Home_Greeting" xml:space="preserve">
+    <value>¡Qué bien verte de nuevo!</value>
+  </data>
+  <data name="Home_Tagline" xml:space="preserve">
+    <value>Tu próximo 180 empieza aquí.</value>
+  </data>
+  <data name="Home_Resume_Title" xml:space="preserve">
+    <value>Reanudar partido</value>
+  </data>
+  <data name="Home_Resume_Text" xml:space="preserve">
+    <value>Tu partida sigue en marcha: vuelve a entrar.</value>
+  </data>
+  <data name="Home_Play_Text" xml:space="preserve">
+    <value>X01, Cricket y más: hasta 8 jugadores o el DartBot.</value>
+  </data>
+  <data name="Home_Training_Text" xml:space="preserve">
+    <value>Ejercicios de triples, dobles y diana con tasa de acierto.</value>
+  </data>
+  <data name="Home_Goals_Text" xml:space="preserve">
+    <value>Retos diarios para mantener tu brazo en forma.</value>
+  </data>
+  <data name="Home_Statistics_Text" xml:space="preserve">
+    <value>Historial de partidos, ganadores y tu tasa de acierto.</value>
+  </data>
+  <data name="Home_YourStats" xml:space="preserve">
+    <value>TUS ESTADÍSTICAS</value>
+  </data>
+  <data name="Home_Darts" xml:space="preserve">
+    <value>Dardos</value>
+  </data>
+  <data name="Home_TodayOfGoal" xml:space="preserve">
+    <value>/ {0} hoy</value>
+  </data>
+  <data name="Home_QuickStart" xml:space="preserve">
+    <value>INICIO RÁPIDO</value>
+  </data>
+  <data name="Home_AllGames" xml:space="preserve">
+    <value>Todos los juegos</value>
+  </data>
+  <data name="Setup_In_Straight" xml:space="preserve">
+    <value>Entrada simple</value>
+  </data>
+  <data name="Setup_In_Double" xml:space="preserve">
+    <value>Entrada doble</value>
+  </data>
+  <data name="Setup_In_Master" xml:space="preserve">
+    <value>Entrada máster</value>
+  </data>
+  <data name="Setup_Out_Straight" xml:space="preserve">
+    <value>Salida simple</value>
+  </data>
+  <data name="Setup_Out_Double" xml:space="preserve">
+    <value>Salida doble</value>
+  </data>
+  <data name="Setup_Out_Master" xml:space="preserve">
+    <value>Salida máster</value>
+  </data>
+  <data name="Setup_Rounds" xml:space="preserve">
+    <value>{0} rondas</value>
+  </data>
+  <data name="Setup_RaceTo" xml:space="preserve">
+    <value>Carrera a {0}</value>
+  </data>
+  <data name="Setup_MaxRounds" xml:space="preserve">
+    <value>Máx. {0} rondas</value>
+  </data>
+  <data name="Setup_ShuffleOrder" xml:space="preserve">
+    <value>Orden aleatorio</value>
+  </data>
+  <data name="Setup_HumanOrBot" xml:space="preserve">
+    <value>Humano / DartBot</value>
+  </data>
+  <data name="Setup_BotLevel" xml:space="preserve">
+    <value>Nivel del DartBot</value>
+  </data>
+  <data name="Setup_LevelOption" xml:space="preserve">
+    <value>Nv. {0}</value>
+  </data>
+  <data name="Setup_ThrowEarlier" xml:space="preserve">
+    <value>Lanzar antes</value>
+  </data>
+  <data name="Setup_AddPlayer" xml:space="preserve">
+    <value>Jugador</value>
+  </data>
+  <data name="Setup_AddBot" xml:space="preserve">
+    <value>DartBot</value>
+  </data>
+  <data name="Players_DefaultName" xml:space="preserve">
+    <value>Jugador {0}</value>
+  </data>
+  <data name="Players_DefaultBotName" xml:space="preserve">
+    <value>DartBot {0}</value>
+  </data>
+  <data name="Players_BotPlaceholder" xml:space="preserve">
+    <value>DartBot</value>
+  </data>
+  <data name="Gameplay_BackToSetup" xml:space="preserve">
+    <value>Volver a la configuración</value>
+  </data>
+  <data name="Gameplay_Round" xml:space="preserve">
+    <value>R {0}</value>
+  </data>
+  <data name="Gameplay_RoundOf" xml:space="preserve">
+    <value>R {0}/{1}</value>
+  </data>
+  <data name="Gameplay_GameOver" xml:space="preserve">
+    <value>Fin del juego</value>
+  </data>
+  <data name="Gameplay_PlayerWins" xml:space="preserve">
+    <value>¡{0} gana!</value>
+  </data>
+  <data name="Gameplay_BotThrowing" xml:space="preserve">
+    <value>lanzando…</value>
+  </data>
+  <data name="Gameplay_LetBotThrow" xml:space="preserve">
+    <value>QUE LANCE EL DARTBOT</value>
+  </data>
+  <data name="Gameplay_Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="Gameplay_Redo" xml:space="preserve">
+    <value>Rehacer</value>
+  </data>
+  <data name="Gameplay_Rematch" xml:space="preserve">
+    <value>Revancha</value>
+  </data>
+  <data name="Gameplay_NewGame" xml:space="preserve">
+    <value>Nueva partida</value>
+  </data>
+  <data name="Gameplay_Remaining" xml:space="preserve">
+    <value>Quedan {0}</value>
+  </data>
+  <data name="Gameplay_Average" xml:space="preserve">
+    <value>Ø {0}</value>
+  </data>
+  <data name="Gameplay_ScoreOut" xml:space="preserve">
+    <value>{0} · eliminado</value>
+  </data>
+  <data name="Gameplay_Out" xml:space="preserve">
+    <value>FUERA</value>
+  </data>
+  <data name="Gameplay_TapNumber" xml:space="preserve">
+    <value>toca un número ↑</value>
+  </data>
+  <data name="Gameplay_HalveItHint" xml:space="preserve">
+    <value>Fallar los 3 → ½</value>
+  </data>
+  <data name="Gameplay_Halved" xml:space="preserve">
+    <value>a la mitad</value>
+  </data>
+  <data name="Gameplay_RaceTo" xml:space="preserve">
+    <value>meta</value>
+  </data>
+  <data name="Gameplay_RoundsLabel" xml:space="preserve">
+    <value>rondas</value>
+  </data>
+  <data name="Gameplay_ShanghaiHint" xml:space="preserve">
+    <value>Simple + doble + triple en una tirada = Shanghai (victoria inmediata)</value>
+  </data>
+  <data name="Gameplay_TargetButtons" xml:space="preserve">
+    <value>Botones de objetivo</value>
+  </data>
+  <data name="Gameplay_OtherSegment" xml:space="preserve">
+    <value>Otro segmento</value>
+  </data>
+  <data name="Gameplay_DoubleTapNumber" xml:space="preserve">
+    <value>D ×2 — toca el número</value>
+  </data>
+  <data name="Gameplay_TripleTapNumber" xml:space="preserve">
+    <value>T ×3 — toca el número</value>
+  </data>
+  <data name="Gameplay_MissButton" xml:space="preserve">
+    <value>FALLO</value>
+  </data>
+  <data name="Gameplay_Miss" xml:space="preserve">
+    <value>Fallo</value>
+  </data>
+  <data name="Gameplay_MarksAria" xml:space="preserve">
+    <value>{0} marcas</value>
+  </data>
+  <data name="Gameplay_Dartboard" xml:space="preserve">
+    <value>Diana</value>
+  </data>
+  <data name="Gameplay_Undone" xml:space="preserve">
+    <value>Deshecho</value>
+  </data>
+  <data name="Gameplay_Redone" xml:space="preserve">
+    <value>Rehecho</value>
+  </data>
+  <data name="Gameplay_BotThrow" xml:space="preserve">
+    <value>{0}: {1} — {2}</value>
+  </data>
+  <data name="Gameplay_InvalidThrow" xml:space="preserve">
+    <value>Este dardo no se puede introducir ahora.</value>
+  </data>
+  <data name="Target_AnyDouble" xml:space="preserve">
+    <value>Cualquier doble</value>
+  </data>
+  <data name="Target_AnyTriple" xml:space="preserve">
+    <value>Cualquier triple</value>
+  </data>
+  <data name="Event_DartRecorded" xml:space="preserve">
+    <value>{0} registrado</value>
+  </data>
+  <data name="Event_Miss" xml:space="preserve">
+    <value>Fallo</value>
+  </data>
+  <data name="Event_NotOpened" xml:space="preserve">
+    <value>Aún sin abrir</value>
+  </data>
+  <data name="Event_Bust" xml:space="preserve">
+    <value>¡Te pasaste!</value>
+  </data>
+  <data name="Event_VisitSaved" xml:space="preserve">
+    <value>Tirada guardada</value>
+  </data>
+  <data name="Event_Checkout" xml:space="preserve">
+    <value>¡Checkout!</value>
+  </data>
+  <data name="Event_CricketAllClosed" xml:space="preserve">
+    <value>Todo cerrado: ¡game shot!</value>
+  </data>
+  <data name="Event_AroundTheClockComplete" xml:space="preserve">
+    <value>¡Vuelta al reloj completada!</value>
+  </data>
+  <data name="Event_Shanghai" xml:space="preserve">
+    <value>¡SHANGHAI!</value>
+  </data>
+  <data name="Event_TargetReached" xml:space="preserve">
+    <value>¡Objetivo alcanzado!</value>
+  </data>
+  <data name="Event_HalveItHalved" xml:space="preserve">
+    <value>Objetivo fallado: puntuación a la mitad</value>
+  </data>
+  <data name="Event_Bob27NoDouble" xml:space="preserve">
+    <value>Sin doble: menos {0}</value>
+  </data>
+  <data name="Event_PlayerOut" xml:space="preserve">
+    <value>¡{0} queda eliminado!</value>
+  </data>
+  <data name="Training_Exercise_T20" xml:space="preserve">
+    <value>Triple 20</value>
+  </data>
+  <data name="Training_Exercise_D20" xml:space="preserve">
+    <value>Doble 20</value>
+  </data>
+  <data name="Training_Exercise_D16" xml:space="preserve">
+    <value>Doble 16</value>
+  </data>
+  <data name="Training_Exercise_Bull" xml:space="preserve">
+    <value>Diana</value>
+  </data>
+  <data name="Training_Exercise_Random" xml:space="preserve">
+    <value>Triples aleatorios</value>
+  </data>
+  <data name="Training_Target_Random" xml:space="preserve">
+    <value>Aleatorio</value>
+  </data>
+  <data name="Training_Darts" xml:space="preserve">
+    <value>{0} dardos</value>
+  </data>
+  <data name="Training_Hit" xml:space="preserve">
+    <value>Acierto</value>
+  </data>
+  <data name="Challenges_Title" xml:space="preserve">
+    <value>Hoy</value>
+  </data>
+  <data name="Challenges_ThrowDarts" xml:space="preserve">
+    <value>Lanza {0} dardos</value>
+  </data>
+  <data name="Challenges_HitTargets" xml:space="preserve">
+    <value>Acierta {0} objetivos</value>
+  </data>
+  <data name="Statistics_Matches" xml:space="preserve">
+    <value>Partidos</value>
+  </data>
+  <data name="Statistics_TrainingDarts" xml:space="preserve">
+    <value>Dardos de entreno</value>
+  </data>
+  <data name="Statistics_HitRate" xml:space="preserve">
+    <value>Tasa de acierto</value>
+  </data>
+  <data name="Statistics_NoMatches" xml:space="preserve">
+    <value>Aún no hay partidos terminados.</value>
+  </data>
+  <data name="Statistics_Unfinished" xml:space="preserve">
+    <value>Sin terminar</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="Settings_SystemDefault" xml:space="preserve">
+    <value>Predeterminado del sistema (automático)</value>
+  </data>
+  <data name="Settings_DetectedLanguage" xml:space="preserve">
+    <value>Detectado: {0}</value>
+  </data>
+  <data name="Settings_Offline" xml:space="preserve">
+    <value>Partidas, entrenamientos y estadísticas funcionan sin conexión y se quedan en este dispositivo (SQLite). No necesitas cuenta.</value>
+  </data>
+  <data name="Settings_Ads" xml:space="preserve">
+    <value>DartTA es gratis gracias a un pequeño banner de Google AdMob en la parte inferior de cada pantalla.</value>
+  </data>
+  <data name="Settings_Privacy" xml:space="preserve">
+    <value>Privacidad y anuncios</value>
+  </data>
+  <data name="GameMode_X01_Name" xml:space="preserve">
+    <value>X01</value>
+  </data>
+  <data name="GameMode_X01_Rules" xml:space="preserve">
+    <value>Resta desde la puntuación inicial hasta llegar exactamente a cero. Bajar de cero (o quedarse en 1 con salida doble/máster) es pasarse y la tirada no cuenta.</value>
+  </data>
+  <data name="GameMode_Cricket_Name" xml:space="preserve">
+    <value>Cricket</value>
+  </data>
+  <data name="GameMode_Cricket_Rules" xml:space="preserve">
+    <value>Acierta del 15 al 20 y la diana tres veces cada uno para abrirlos. Los impactos extra en un número abierto suman puntos mientras algún rival lo tenga abierto. Cierra todo con más puntos para ganar.</value>
+  </data>
+  <data name="GameMode_CutThroatCricket_Name" xml:space="preserve">
+    <value>Cut Throat Cricket</value>
+  </data>
+  <data name="GameMode_CutThroatCricket_Rules" xml:space="preserve">
+    <value>Como el Cricket, pero los puntos en tus números abiertos se los lleva cada rival que aún no los ha cerrado. Cierra todo con menos puntos para ganar.</value>
+  </data>
+  <data name="GameMode_NoScoreCricket_Name" xml:space="preserve">
+    <value>No Score Cricket</value>
+  </data>
+  <data name="GameMode_NoScoreCricket_Rules" xml:space="preserve">
+    <value>Carrera pura: gana el primero en cerrar del 15 al 20 y la diana. No se suman puntos.</value>
+  </data>
+  <data name="GameMode_AroundTheClock_Name" xml:space="preserve">
+    <value>Around the Clock</value>
+  </data>
+  <data name="GameMode_AroundTheClock_Rules" xml:space="preserve">
+    <value>Acierta el 1, 2, 3… hasta el 20 en orden. Cualquier segmento del número actual cuenta. Gana el primero en acertar el 20.</value>
+  </data>
+  <data name="GameMode_Shanghai_Name" xml:space="preserve">
+    <value>Shanghai</value>
+  </data>
+  <data name="GameMode_Shanghai_Rules" xml:space="preserve">
+    <value>En la ronda N el objetivo es el número N. Simples, dobles y triples del objetivo suman su valor. Acertar simple, doble y triple del objetivo en una tirada es un Shanghai y gana al instante.</value>
+  </data>
+  <data name="GameMode_CountUp_Name" xml:space="preserve">
+    <value>Count Up</value>
+  </data>
+  <data name="GameMode_CountUp_Rules" xml:space="preserve">
+    <value>Cada dardo suma su valor. Gana el primero en alcanzar la puntuación objetivo.</value>
+  </data>
+  <data name="GameMode_HighScore_Name" xml:space="preserve">
+    <value>High Score</value>
+  </data>
+  <data name="GameMode_HighScore_Rules" xml:space="preserve">
+    <value>Cada dardo suma su valor. Gana el total más alto tras la última ronda.</value>
+  </data>
+  <data name="GameMode_HalveIt_Name" xml:space="preserve">
+    <value>Halve It</value>
+  </data>
+  <data name="GameMode_HalveIt_Rules" xml:space="preserve">
+    <value>Cada ronda tiene un objetivo (15, 16, cualquier doble, 17, 18, cualquier triple, 19, 20, diana). Los aciertos en el objetivo suman puntos; si lo fallas con los tres dardos, tu puntuación se reduce a la mitad.</value>
+  </data>
+  <data name="GameMode_Bob27_Name" xml:space="preserve">
+    <value>Bob's 27</value>
+  </data>
+  <data name="GameMode_Bob27_Rules" xml:space="preserve">
+    <value>Empiezas con 27. En la ronda N el objetivo es el doble N (y al final la diana). Cada acierto suma el valor del doble; fallar los tres dardos lo resta. Si llegas a cero o menos, quedas eliminado.</value>
+  </data>
+</root>

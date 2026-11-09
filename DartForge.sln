@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartForge.App", "DartForge.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartForge.Core", "DartForge.Core\DartForge.Core.csproj", "{6F0C51A4-1D3A-49E6-8F12-BB2F112964A3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartForge.Localization", "DartForge.Localization\DartForge.Localization.csproj", "{9B1D4C7E-5A2F-4E8B-A3D6-2C71F0E84B19}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DartForge.Tests", "DartForge.Tests\DartForge.Tests.csproj", "{F488EB65-3629-4B54-BA8B-516C438DA40A}"
 EndProject
 Global
@@ -27,6 +29,10 @@ Global
 		{F488EB65-3629-4B54-BA8B-516C438DA40A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F488EB65-3629-4B54-BA8B-516C438DA40A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F488EB65-3629-4B54-BA8B-516C438DA40A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B1D4C7E-5A2F-4E8B-A3D6-2C71F0E84B19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B1D4C7E-5A2F-4E8B-A3D6-2C71F0E84B19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B1D4C7E-5A2F-4E8B-A3D6-2C71F0E84B19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B1D4C7E-5A2F-4E8B-A3D6-2C71F0E84B19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

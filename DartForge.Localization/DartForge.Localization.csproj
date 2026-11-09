@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>DartForge.Localization</RootNamespace>
+    <!-- Only ship satellite assemblies for the UI languages we translate (add new codes here, e.g. "de;es;fr"). -->
+    <SatelliteResourceLanguages>de;es</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DartForge.Core\DartForge.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="DartForge.Tests" />
+  </ItemGroup>
+</Project>
