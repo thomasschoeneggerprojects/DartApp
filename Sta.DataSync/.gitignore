@@ -1,0 +1,7 @@
+bin/
+obj/
+*.user
+.vs/
+# OAuth client settings for the samples: never commit.
+oauth.props
+sample-data/

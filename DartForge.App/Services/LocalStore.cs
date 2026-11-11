@@ -35,12 +35,53 @@ public sealed class LocalStore
     /// <summary>Stores a training session and returns its record id.</summary>
     public async Task<int> SaveTrainingAsync(string mode, int score, int darts)
     {
-        var db = await OpenAsync();
-        var record = new TrainingRecord { Mode = mode, Score = score, Darts = darts, PlayedUtc = DateTimeOffset.UtcNow.ToString("O") };
-        await db.InsertAsync(record);
-        return record.Id;
+        await _mutex.WaitAsync();
+        try
+        {
+            var db = await OpenAsync();
+            var record = new TrainingRecord { Mode = mode, Score = score, Darts = darts, PlayedUtc = DateTimeOffset.UtcNow.ToString("O") };
+            await db.InsertAsync(record);
+            return record.Id;
+        }
+        finally { _mutex.Release(); }
     }
     public async Task<List<TrainingRecord>> TrainingAsync() => await (await OpenAsync()).Table<TrainingRecord>().OrderByDescending(x=>x.Id).ToListAsync();
+
+    // ---- Cloud sync (Sta.DataSync restores the whole database through SQLite's backup API) ----
+
+    /// <summary>Copy of the history taken right before a cloud version replaced it (one generation).</summary>
+    public const string PreRestoreBackupFileName = "dartforge.before-sync.db3";
+
+    /// <summary>Raised after the database was replaced by a version from the cloud; screens reload their data.</summary>
+    public event EventHandler? DataReplaced;
+
+    /// <summary>
+    /// Called before a cloud version is restored: blocks new writes until <see cref="EndRestoreAsync"/> and keeps a
+    /// backup of the current history, so choosing the cloud version can be undone by support if needed.
+    /// </summary>
+    public async Task BeginRestoreAsync(CancellationToken cancellationToken)
+    {
+        await _mutex.WaitAsync(cancellationToken);
+        try
+        {
+            string backup = Path.Combine(DataDirectory, PreRestoreBackupFileName);
+            if (File.Exists(backup)) File.Delete(backup);
+            await (await OpenAsync()).BackupAsync(backup);
+        }
+        catch
+        {
+            _mutex.Release();
+            throw;
+        }
+    }
+
+    /// <summary>Called after the restore attempt (also when it failed): allows writes again and tells screens to reload.</summary>
+    public Task EndRestoreAsync()
+    {
+        _mutex.Release();
+        DataReplaced?.Invoke(this, EventArgs.Empty);
+        return Task.CompletedTask;
+    }
 }
 public sealed class MatchRecord
 {

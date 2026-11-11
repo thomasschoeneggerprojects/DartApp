@@ -1,0 +1,8 @@
+<Project>
+  <!-- Copy to oauth.props (git-ignored) and fill in your Google Cloud OAuth clients. Never commit oauth.props.
+       Android needs no value here: its OAuth client is matched by package name and signing certificate. -->
+  <PropertyGroup>
+    <GoogleDesktopClientId>YOUR-DESKTOP-CLIENT-ID.apps.googleusercontent.com</GoogleDesktopClientId>
+    <GoogleDesktopClientSecret>YOUR-DESKTOP-CLIENT-SECRET</GoogleDesktopClientSecret>
+  </PropertyGroup>
+</Project>

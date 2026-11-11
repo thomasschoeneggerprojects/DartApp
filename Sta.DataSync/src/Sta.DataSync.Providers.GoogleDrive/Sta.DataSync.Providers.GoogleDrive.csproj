@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Google Drive destination for Sta.DataSync (appDataFolder by default): streaming and resumable uploads, change tokens, pagination, rate-limit and error mapping, OAuth 2.0 for installed applications (PKCE).</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.78.0.4313" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sta.DataSync.Abstractions\Sta.DataSync.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Sta.DataSync.GoogleDrive.Tests" />
+    <InternalsVisibleTo Include="Sta.DataSync.IntegrationTests" />
+  </ItemGroup>
+</Project>

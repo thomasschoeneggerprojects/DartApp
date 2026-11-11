@@ -97,7 +97,7 @@
     <value>Einstellungen</value>
   </data>
   <data name="Page_Settings_Text" xml:space="preserve">
-    <value>Sprache, Datenschutz, Werbung und App-Info</value>
+    <value>Sprache, Datenschutz, Werbung, Cloud-Sync und App-Info</value>
   </data>
   <data name="Home_Slogan" xml:space="preserve">
     <value>ZÄHLEN · TRAINIEREN · STEIGERN</value>
@@ -524,5 +524,56 @@
   </data>
   <data name="Celebration_Title_Normal" xml:space="preserve">
     <value>SERIE VERLÄNGERT!</value>
+  </data>
+  <data name="Settings_CloudSync_Title" xml:space="preserve">
+    <value>Cloud-Sicherung &amp; Sync</value>
+  </data>
+  <data name="Settings_CloudSync_Description" xml:space="preserve">
+    <value>Speichert deinen Spiel- und Trainingsverlauf in einem versteckten Ordner deines Google Drive und hält ihn zwischen deinen Geräten synchron. DartTA funktioniert immer offline; Änderungen werden hochgeladen, sobald du online bist.</value>
+  </data>
+  <data name="Settings_CloudSync_Connect" xml:space="preserve">
+    <value>Google-Konto verbinden</value>
+  </data>
+  <data name="Settings_CloudSync_Connected" xml:space="preserve">
+    <value>Google-Konto verbunden</value>
+  </data>
+  <data name="Settings_CloudSync_Disconnect" xml:space="preserve">
+    <value>Trennen</value>
+  </data>
+  <data name="Settings_CloudSync_AutoSync" xml:space="preserve">
+    <value>Automatisch synchronisieren</value>
+  </data>
+  <data name="Settings_CloudSync_SyncNow" xml:space="preserve">
+    <value>Jetzt synchronisieren</value>
+  </data>
+  <data name="Settings_CloudSync_Syncing" xml:space="preserve">
+    <value>Synchronisiere…</value>
+  </data>
+  <data name="Settings_CloudSync_LastSync" xml:space="preserve">
+    <value>Zuletzt synchronisiert: {0}</value>
+  </data>
+  <data name="Settings_CloudSync_Never" xml:space="preserve">
+    <value>noch nie</value>
+  </data>
+  <data name="Settings_CloudSync_Offline" xml:space="preserve">
+    <value>Offline – deine Änderungen bleiben auf diesem Gerät und werden später synchronisiert.</value>
+  </data>
+  <data name="Settings_CloudSync_ConflictText" xml:space="preserve">
+    <value>Dein Verlauf wurde auf diesem und auf einem anderen Gerät geändert. Welche Version möchtest du behalten? Die andere wird ersetzt; bevor die Cloud-Version deine Daten ersetzt, behält dieses Gerät eine Sicherungskopie.</value>
+  </data>
+  <data name="Settings_CloudSync_KeepDevice" xml:space="preserve">
+    <value>Dieses Gerät behalten</value>
+  </data>
+  <data name="Settings_CloudSync_KeepCloud" xml:space="preserve">
+    <value>Cloud-Version verwenden</value>
+  </data>
+  <data name="Settings_CloudSync_Error_SignIn" xml:space="preserve">
+    <value>Die Google-Anmeldung hat nicht geklappt. Bitte versuche es erneut.</value>
+  </data>
+  <data name="Settings_CloudSync_Error_Auth" xml:space="preserve">
+    <value>Bitte verbinde dein Google-Konto erneut.</value>
+  </data>
+  <data name="Settings_CloudSync_Error_Failed" xml:space="preserve">
+    <value>Die Synchronisierung wurde nicht abgeschlossen. Sie wird automatisch wiederholt.</value>
   </data>
 </root>

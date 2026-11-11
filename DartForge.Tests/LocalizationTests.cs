@@ -500,6 +500,12 @@ public sealed class StreakLocalizationTests
             "Home_StreakCard_Title", "Home_StreakCard_Stats", "Home_StreakCard_AtRisk", "Home_StreakCard_Safe", "Home_StreakCard_Start",
             // Celebration overlay headlines (DartForge.App/Streaks/StreakCelebrations.cs).
             "Celebration_Title_Record", "Celebration_Title_Milestone", "Celebration_Title_Normal",
+            // Cloud backup & sync panel (DartForge.App/Components/Settings/CloudSyncPanel.razor).
+            "Settings_CloudSync_Title", "Settings_CloudSync_Description", "Settings_CloudSync_Connect", "Settings_CloudSync_Connected",
+            "Settings_CloudSync_Disconnect", "Settings_CloudSync_AutoSync", "Settings_CloudSync_SyncNow", "Settings_CloudSync_Syncing",
+            "Settings_CloudSync_LastSync", "Settings_CloudSync_Never", "Settings_CloudSync_Offline", "Settings_CloudSync_ConflictText",
+            "Settings_CloudSync_KeepDevice", "Settings_CloudSync_KeepCloud", "Settings_CloudSync_Error_SignIn", "Settings_CloudSync_Error_Auth",
+            "Settings_CloudSync_Error_Failed",
         }.Select(k => new object[] { k });
 
     [Theory, MemberData(nameof(StreakKeys))]

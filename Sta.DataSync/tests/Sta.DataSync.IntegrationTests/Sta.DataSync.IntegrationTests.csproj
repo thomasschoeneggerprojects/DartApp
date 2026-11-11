@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.10.0" />
+    <PackageReference Include="Xunit.SkippableFact" Version="1.5.23" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Sta.DataSync.Hosting\Sta.DataSync.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\Sta.DataSync.Providers.GoogleDrive\Sta.DataSync.Providers.GoogleDrive.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Shared in-memory Google Drive API so end-to-end tests exercise the real provider. -->
+    <Compile Include="..\Sta.DataSync.GoogleDrive.Tests\Fakes\FakeDriveServer.cs" Link="Fakes\FakeDriveServer.cs" />
+  </ItemGroup>
+</Project>

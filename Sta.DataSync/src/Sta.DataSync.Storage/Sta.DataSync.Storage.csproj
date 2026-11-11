@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>SQLite implementation of the Sta.DataSync state store: baselines, hash cache, conflicts, provider tokens and the recovery journal, in a database separate from the application's data.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
+    <!-- SQLitePCLRaw 3.x: native libraries with Android 16 KB pages, and the same stack sqlite-net-pcl 1.11 uses, so apps
+         combining both get one SQLite build. -->
+    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sta.DataSync.Abstractions\Sta.DataSync.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Sta.DataSync.Storage.Tests" />
+  </ItemGroup>
+</Project>

@@ -104,7 +104,7 @@
     <value>Settings</value>
   </data>
   <data name="Page_Settings_Text" xml:space="preserve">
-    <value>Language, privacy, ads and app info</value>
+    <value>Language, privacy, ads, cloud sync and app info</value>
   </data>
   <data name="Home_Slogan" xml:space="preserve">
     <value>SCORE · TRAIN · PROGRESS</value>
@@ -566,5 +566,65 @@
   <data name="Celebration_Title_Normal" xml:space="preserve">
     <value>STREAK EXTENDED!</value>
     <comment>Streak celebration overlay headline: a streak grew by one (no milestone). Shown in capitals.</comment>
+  </data>
+  <data name="Settings_CloudSync_Title" xml:space="preserve">
+    <value>Cloud backup &amp; sync</value>
+    <comment>Settings panel heading.</comment>
+  </data>
+  <data name="Settings_CloudSync_Description" xml:space="preserve">
+    <value>Keeps your match and training history in a hidden folder of your Google Drive and in sync between your devices. DartTA always works offline; changes are uploaded when you are online.</value>
+  </data>
+  <data name="Settings_CloudSync_Connect" xml:space="preserve">
+    <value>Connect Google account</value>
+    <comment>Button.</comment>
+  </data>
+  <data name="Settings_CloudSync_Connected" xml:space="preserve">
+    <value>Google account connected</value>
+  </data>
+  <data name="Settings_CloudSync_Disconnect" xml:space="preserve">
+    <value>Disconnect</value>
+    <comment>Button: stops sync and signs out of Google.</comment>
+  </data>
+  <data name="Settings_CloudSync_AutoSync" xml:space="preserve">
+    <value>Sync automatically</value>
+    <comment>Checkbox.</comment>
+  </data>
+  <data name="Settings_CloudSync_SyncNow" xml:space="preserve">
+    <value>Sync now</value>
+    <comment>Button.</comment>
+  </data>
+  <data name="Settings_CloudSync_Syncing" xml:space="preserve">
+    <value>Syncing…</value>
+    <comment>Button text while a sync runs.</comment>
+  </data>
+  <data name="Settings_CloudSync_LastSync" xml:space="preserve">
+    <value>Last sync: {0}</value>
+    <comment>{0} = local date and time, or Settings_CloudSync_Never.</comment>
+  </data>
+  <data name="Settings_CloudSync_Never" xml:space="preserve">
+    <value>never</value>
+  </data>
+  <data name="Settings_CloudSync_Offline" xml:space="preserve">
+    <value>Offline – your changes are kept on this device and synced later.</value>
+  </data>
+  <data name="Settings_CloudSync_ConflictText" xml:space="preserve">
+    <value>Your history was changed on this device and on another device. Which version do you want to keep? The other one is replaced; before the cloud version replaces your data, this device keeps a backup copy.</value>
+  </data>
+  <data name="Settings_CloudSync_KeepDevice" xml:space="preserve">
+    <value>Keep this device</value>
+    <comment>Button: upload this device's history.</comment>
+  </data>
+  <data name="Settings_CloudSync_KeepCloud" xml:space="preserve">
+    <value>Use cloud version</value>
+    <comment>Button: replace this device's history with the cloud version.</comment>
+  </data>
+  <data name="Settings_CloudSync_Error_SignIn" xml:space="preserve">
+    <value>Google sign-in did not work. Please try again.</value>
+  </data>
+  <data name="Settings_CloudSync_Error_Auth" xml:space="preserve">
+    <value>Please connect your Google account again.</value>
+  </data>
+  <data name="Settings_CloudSync_Error_Failed" xml:space="preserve">
+    <value>Sync did not complete. It is retried automatically.</value>
   </data>
 </root>

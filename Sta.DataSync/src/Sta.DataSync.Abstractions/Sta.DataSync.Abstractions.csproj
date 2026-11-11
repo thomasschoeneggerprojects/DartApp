@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Sta.DataSync</RootNamespace>
+    <Description>Contracts of Sta.DataSync: data sources, destination providers, state store, conflict resolution, results and errors. No dependencies.</Description>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+</Project>

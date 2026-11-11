@@ -22,5 +22,3 @@ C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\DartForge.Localizat
 C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\refint\DartForge.Localization.dll
 C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\DartForge.Localization.pdb
 C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\ref\DartForge.Localization.dll
-C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\de\DartForge.Localization.resources.cs
-C:\DartForge\DartApp\DartForge.Localization\obj\Debug\net8.0\es\DartForge.Localization.resources.cs

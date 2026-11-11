@@ -1,0 +1,5 @@
+root = true
+
+[*.cs]
+# CA1859 (use concrete types for performance) conflicts with keeping internal signatures on read-only interfaces.
+dotnet_diagnostic.CA1859.severity = none

@@ -1,0 +1,140 @@
+@using System.Globalization
+@using Sta.DataSync
+@inherits LocalizedComponentBase
+@inject CloudSync Cloud
+@* Cloud backup & sync settings. All sync logic lives in CloudSync / Sta.DataSync; this only shows state and forwards taps. *@
+<article class="panel cloud-panel">
+  <h2><Icon Name="cloud" Size="18" /> @L("Settings_CloudSync_Title")</h2>
+  <p class="muted">@L("Settings_CloudSync_Description")</p>
+  @if (!connected)
+  {
+    <button class="primary full" disabled="@busy" @onclick="ConnectAsync"><Icon Name="cloud" Size="16" /> @L("Settings_CloudSync_Connect")</button>
+  }
+  else
+  {
+    <p class="cloud-state"><Icon Name="check" Size="16" /> @L("Settings_CloudSync_Connected")</p>
+    <label class="toggle"><input type="checkbox" checked="@autoSync" @onchange="ToggleAutoSyncAsync" /> @L("Settings_CloudSync_AutoSync")</label>
+    <button class="icon-btn wide full" disabled="@(busy || syncing)" @onclick="SyncNowAsync">
+      <Icon Name="refresh" Size="16" /> @(syncing ? L("Settings_CloudSync_Syncing") : L("Settings_CloudSync_SyncNow"))
+    </button>
+    @if (syncing && progress is { TotalItems: > 0 } p)
+    {
+      <div class="progress"><div style="width:@((100.0 * p.CompletedItems / p.TotalItems).ToString("0", CultureInfo.InvariantCulture))%"></div></div>
+    }
+    <p class="muted">@L("Settings_CloudSync_LastSync", lastSync?.ToLocalTime().ToString("g", CultureInfo.CurrentCulture) ?? L("Settings_CloudSync_Never"))</p>
+    @if (hasConflict)
+    {
+      <div class="cloud-conflict">
+        <p>@L("Settings_CloudSync_ConflictText")</p>
+        <div class="cloud-choices">
+          <button class="icon-btn" disabled="@busy" @onclick="() => KeepAsync(true)">@L("Settings_CloudSync_KeepDevice")</button>
+          <button class="icon-btn" disabled="@busy" @onclick="() => KeepAsync(false)">@L("Settings_CloudSync_KeepCloud")</button>
+        </div>
+      </div>
+    }
+    <button class="icon-btn wide full" disabled="@busy" @onclick="DisconnectAsync"><Icon Name="close" Size="16" /> @L("Settings_CloudSync_Disconnect")</button>
+  }
+  @if (offline) { <p class="muted">@L("Settings_CloudSync_Offline")</p> }
+  @if (error is not null) { <p class="cloud-error">@error.Resolve(Loc)</p> }
+</article>
+
+@code {
+  private bool connected, autoSync, busy, syncing, hasConflict, offline;
+  private DateTimeOffset? lastSync;
+  private SyncProgress? progress;
+  /// <summary>Kept as key (+ arguments) so it follows language switches.</summary>
+  private LocText? error;
+
+  protected override async Task OnInitializedAsync()
+  {
+    Cloud.Service.StatusChanged += OnStatusChanged;
+    Cloud.Service.ProgressChanged += OnProgress;
+    Cloud.Service.SyncCompleted += OnCompleted;
+    autoSync = Cloud.AutoSync;
+    await RefreshAsync();
+  }
+
+  private async Task RefreshAsync()
+  {
+    connected = await Cloud.IsConnectedAsync();
+    SyncStatus status = await Cloud.Service.GetStatusAsync();
+    lastSync = status.LastSuccessUtc;
+    syncing = status.Activity == SyncActivity.Synchronizing;
+    offline = status.Activity == SyncActivity.Offline;
+    hasConflict = connected && (await Cloud.ConflictsAsync()).Count > 0;
+  }
+
+  private Task ConnectAsync() => RunAsync(async () =>
+  {
+    try
+    {
+      await Cloud.ConnectAsync();
+    }
+    catch (OperationCanceledException)
+    {
+      // The user closed the Google dialog: no error.
+    }
+    catch (SyncException)
+    {
+      error = new LocText("Settings_CloudSync_Error_SignIn");
+    }
+  });
+
+  private Task DisconnectAsync() => RunAsync(() => Cloud.DisconnectAsync());
+
+  private Task SyncNowAsync() => RunAsync(async () => Show(await Cloud.SyncNowAsync()));
+
+  private Task KeepAsync(bool keepThisDevice) => RunAsync(async () => Show(await Cloud.KeepVersionAsync(keepThisDevice)));
+
+  private async Task ToggleAutoSyncAsync(ChangeEventArgs e)
+  {
+    autoSync = e.Value is true;
+    await Cloud.SetAutoSyncAsync(autoSync);
+  }
+
+  /// <summary>Runs an action with the buttons disabled; the UI thread is never blocked.</summary>
+  private async Task RunAsync(Func<Task> action)
+  {
+    busy = true;
+    error = null;
+    try
+    {
+      await action();
+    }
+    catch (SyncException)
+    {
+      error = new LocText("Settings_CloudSync_Error_Failed");
+    }
+    finally
+    {
+      busy = false;
+      await RefreshAsync();
+    }
+  }
+
+  private void Show(SyncResult result) => error = result.Status switch
+  {
+    SyncResultStatus.AuthenticationRequired => new LocText("Settings_CloudSync_Error_Auth"),
+    SyncResultStatus.Failed or SyncResultStatus.PartiallySucceeded when result.Failures.Count > 0 => new LocText("Settings_CloudSync_Error_Failed"),
+    _ => null,
+  };
+
+  // Service events can arrive on any thread: marshal to the renderer.
+  private void OnStatusChanged(object? sender, SyncStatusChangedEventArgs e) => _ = InvokeAsync(async () => { await RefreshAsync(); StateHasChanged(); });
+
+  private void OnProgress(object? sender, SyncProgressEventArgs e) => _ = InvokeAsync(() => { progress = e.Progress; StateHasChanged(); });
+
+  private void OnCompleted(object? sender, SyncCompletedEventArgs e) => _ = InvokeAsync(async () => { Show(e.Result); await RefreshAsync(); StateHasChanged(); });
+
+  protected override void Dispose(bool disposing)
+  {
+    if (disposing)
+    {
+      Cloud.Service.StatusChanged -= OnStatusChanged;
+      Cloud.Service.ProgressChanged -= OnProgress;
+      Cloud.Service.SyncCompleted -= OnCompleted;
+    }
+
+    base.Dispose(disposing);
+  }
+}

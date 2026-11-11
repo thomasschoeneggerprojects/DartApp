@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Sta.DataSync.Providers.GoogleDrive\Sta.DataSync.Providers.GoogleDrive.csproj" />
+  </ItemGroup>
+</Project>

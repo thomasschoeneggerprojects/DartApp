@@ -385,3 +385,12 @@ nav small{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-o
 .streak-notice>.ico{flex:none;color:rgb(var(--acc))}
 .streak-notice>span{flex:1;min-width:0;overflow-wrap:anywhere;hyphens:auto}
 .streak-notice .sn-close{color:#9eacb8}
+
+/* Cloud backup & sync panel (Settings). */
+.cloud-panel h2{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cloud-panel .cloud-state{display:flex;align-items:center;gap:8px;color:#4ed2a0;font-weight:700}
+.cloud-panel .toggle{font-size:14px;color:#dbe4ee}
+.cloud-panel .cloud-error{color:#f28b82;font-weight:600}
+.cloud-conflict{background:#2a2418;border:1px solid #f2c14e55;border-radius:12px;padding:12px 14px;margin-top:14px}
+.cloud-conflict p{margin:0 0 10px;color:#f2d79a}
+.cloud-choices{display:flex;gap:8px}.cloud-choices button{flex:1}

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Sta.DataSync.Storage\Sta.DataSync.Storage.csproj" />
+  </ItemGroup>
+</Project>

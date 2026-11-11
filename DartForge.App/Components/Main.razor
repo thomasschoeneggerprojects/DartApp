@@ -8,6 +8,7 @@
 @inject AdState Ads
 @inject IJSRuntime JS
 @inject DartStreakTracker StreakTracker
+@inject CloudSync Cloud
 @inherits LocalizedComponentBase
 @if (showIntro)
 {
@@ -163,6 +164,7 @@ else
     @if (Loc.SelectedLanguage == AppLanguage.System) { <p class="muted lang-detected">@L("Settings_DetectedLanguage", Loc.ActiveLanguage.NativeName)</p> }
     <p><Icon Name="shield" Size="16" /> @L("Settings_Offline")</p><p><Icon Name="bolt" Size="16" /> @L("Settings_Ads")</p><button class="icon-btn wide full" @onclick="() => Ads.ShowPrivacyOptions?.Invoke()"><Icon Name="shield" Size="16" /> @L("Settings_Privacy")</button><p class="muted">Version @Microsoft.Maui.ApplicationModel.AppInfo.Current.VersionString (@Microsoft.Maui.ApplicationModel.AppInfo.Current.BuildString)</p>
   </article>
+  <CloudSyncPanel />
 }
 </main>
 <nav>@foreach(var item in NavItems) { var name=item.Tab; <button class="@(tab==name?"nav-active":"")" style="--acc:@item.Accent" @onclick="()=>Navigate(name)"><Icon Name="@item.Icon" Size="22" /><small>@L(item.LabelKey)</small></button> }</nav>
@@ -197,7 +199,15 @@ else
  {
    AddAutoSlot(new PlayerSlot(), new LocText("Players_DefaultName", 1));
    AddAutoSlot(new PlayerSlot { IsBot=true, Level=10 }, new LocText("Players_BotPlaceholder"));
+   Store.DataReplaced += OnHistoryReplaced;
    await Refresh();
+ }
+ /// <summary>The history was restored from the cloud: reload everything that shows it.</summary>
+ private void OnHistoryReplaced(object? sender, EventArgs e) => _ = InvokeAsync(async () => { await Refresh(); StateHasChanged(); });
+ protected override void Dispose(bool disposing)
+ {
+   if (disposing) Store.DataReplaced -= OnHistoryReplaced;
+   base.Dispose(disposing);
  }
  protected override void OnLanguageChangedCore()
  {
@@ -252,6 +262,8 @@ else
  private void OnIntroReveal()
  {
    introRevealed=true;
+   // Cloud sync starts only after the intro and only when an account is connected (never blocks the UI).
+   _ = Cloud.StartIfConnectedAsync();
    if(streaksEvaluated) return;
    streaksEvaluated=true;
    // Not awaited, so the intro fade is never held up by file IO.
@@ -348,7 +360,7 @@ else
  {
    if(Session.Current is null || !Session.Current.Snapshot.IsFinished || Session.Saved) return;
    var snap=Session.Current.Snapshot;
-   var matchId=await Store.SaveMatchAsync(snap); Session.MarkSaved();
+   var matchId=await Store.SaveMatchAsync(snap); Session.MarkSaved(); Cloud.NotifyLocalChange();
    var finishedAt=DateTimeOffset.UtcNow;
    await Refresh();
    // Streaks count only matches with a winner and at least one human; every human on this device is a local player.
@@ -363,7 +375,7 @@ else
    if(!trainingActive) return;
    trainingActive=false;
    var darts=trainingThrown;
-   var sessionId=await Store.SaveTrainingAsync(exercise,trainingHits,darts);
+   var sessionId=await Store.SaveTrainingAsync(exercise,trainingHits,darts); Cloud.NotifyLocalChange();
    var finishedAt=DateTimeOffset.UtcNow;
    await Refresh();   // TodayDarts now includes this session (same total as the home goal ring)
    if(darts>0) await TrackStreaks(async () => await StreakTracker.RecordTrainingAsync(sessionId.ToString(CultureInfo.InvariantCulture), finishedAt, darts, TodayDarts));

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:Sta.DataSync.Maui.Sample.Pages"
+             x:Class="Sta.DataSync.Maui.Sample.Pages.SyncSettingsPage"
+             x:DataType="pages:SyncSettingsViewModel"
+             Title="Synchronization">
+  <ScrollView>
+    <VerticalStackLayout Padding="20" Spacing="14">
+      <Label Text="Google Drive" FontSize="22" FontAttributes="Bold" />
+      <Label Text="{Binding IsConnected, StringFormat='Account connected: {0}'}" />
+      <HorizontalStackLayout Spacing="10">
+        <Button Text="Connect Google account" Command="{Binding ConnectCommand}" IsVisible="{Binding IsConnected, Converter={StaticResource Invert}}" />
+        <Button Text="Disconnect" Command="{Binding DisconnectCommand}" IsVisible="{Binding IsConnected}" />
+      </HorizontalStackLayout>
+
+      <Grid ColumnDefinitions="*,Auto">
+        <Label Text="Automatic synchronization" VerticalOptions="Center" />
+        <Switch Grid.Column="1" IsToggled="{Binding AutoSync}" />
+      </Grid>
+
+      <Button Text="Sync now" Command="{Binding SyncNowCommand}" />
+      <Label Text="{Binding State, StringFormat='State: {0}'}" />
+      <ProgressBar Progress="{Binding Progress}" />
+      <Label Text="{Binding LastSync, StringFormat='Last successful sync: {0}'}" />
+      <Label Text="{Binding Error}" TextColor="Firebrick" IsVisible="{Binding Error, Converter={StaticResource NotEmpty}}" />
+
+      <BoxView HeightRequest="1" Color="LightGray" />
+      <Label Text="Local data (works offline)" FontSize="18" FontAttributes="Bold" />
+      <Editor Text="{Binding Note}" Placeholder="A note saved as notes/note.json" AutoSize="TextChanges" />
+      <Button Text="Save note" Command="{Binding SaveNoteCommand}" />
+      <Label Text="{Binding Records}" />
+      <Button Text="Add training record (SQLite)" Command="{Binding AddRecordCommand}" />
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>

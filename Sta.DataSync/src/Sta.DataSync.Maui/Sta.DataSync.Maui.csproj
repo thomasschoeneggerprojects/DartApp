@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- MAUI 9 matches the installed workloads and the host app; all synchronization logic stays in the net8.0 libraries. -->
+    <TargetFramework></TargetFramework>
+    <TargetFrameworks>net9.0-android;net9.0-ios</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <RootNamespace>Sta.DataSync.Maui</RootNamespace>
+    <Description>Thin .NET MAUI integration for Sta.DataSync: Google sign-in adapters, secure token storage, connectivity monitoring, lifecycle-aware scheduling and main-thread notifications.</Description>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">24.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.111" />
+  </ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Xamarin.GooglePlayServices.Auth" Version="121.3.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sta.DataSync.Hosting\Sta.DataSync.Hosting.csproj" />
+    <ProjectReference Include="..\Sta.DataSync.Providers.GoogleDrive\Sta.DataSync.Providers.GoogleDrive.csproj" />
+  </ItemGroup>
+</Project>
