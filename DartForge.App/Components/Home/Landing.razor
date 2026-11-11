@@ -1,3 +1,5 @@
+@using DartForge.Streaks
+@using SportTA.Streaks
 @inherits LocalizedComponentBase
 @* Home screen in the BikeTa style: hero with brand bar + greeting (animated dartboard as the hero picture),
    big choice cards with accent glow and outline, a stats card with the daily goal ring and quick-start chips. *@
@@ -25,6 +27,7 @@
   </div>
 
   <div class="home-cards">
+    @ChildContent
     @if (HasActiveMatch)
     {
       <button class="choice" style="--acc:242,193,78" @onclick="OnResume">
@@ -51,6 +54,29 @@
         <span class="ch-go"><Icon Name="back" Size="15" /></span>
       </button>
     }
+
+    @* Daily-goal streak (BikeTa choice card, gold accent): current + longest run and a hint while today's goal is open. *@
+    <button class="choice streak" style="--acc:242,193,78" @onclick='() => OnNavigate.InvokeAsync("Training")'>
+      <span class="ch-pic"><Icon Name="flame" Size="120" Stroke="1.2" /></span>
+      <span class="ch-tile"><Icon Name="flame" Size="26" /></span>
+      <span class="ch-text">
+        <b>@L("Home_StreakCard_Title")</b>
+        <small>@L("Home_StreakCard_Stats", StreakText.Count(DartTaStreaks.DailyGoal, StreakCurrent).Resolve(Loc), StreakText.Count(DartTaStreaks.DailyGoal, StreakLongest).Resolve(Loc))</small>
+        @switch (StreakHint)
+        {
+          case "safe":
+            <small class="sc-hint safe"><Icon Name="check" Size="12" /> @L("Home_StreakCard_Safe")</small>
+            break;
+          case "risk":
+            <small class="sc-hint risk"><Icon Name="bolt" Size="12" /> @L("Home_StreakCard_AtRisk", TodayDarts, DailyGoal)</small>
+            break;
+          default:
+            <small class="sc-hint">@L("Home_StreakCard_Start", DailyGoal)</small>
+            break;
+        }
+      </span>
+      <span class="ch-go"><Icon Name="back" Size="15" /></span>
+    </button>
 
     <button class="week-card" @onclick='() => OnNavigate.InvokeAsync("Statistics")'>
       <span class="wk-left">
@@ -84,13 +110,26 @@
   [Parameter] public int TodayDarts { get; set; }
   [Parameter] public string HitRate { get; set; } = "0%";
   [Parameter] public bool HasActiveMatch { get; set; }
+  /// <summary>Progress of the daily-goal streak; <see langword="null"/> shows an empty (0 / 0) card.</summary>
+  [Parameter] public StreakProgress? DailyStreak { get; set; }
+  /// <summary>Shown above the cards (streak notices).</summary>
+  [Parameter] public RenderFragment? ChildContent { get; set; }
   [Parameter] public EventCallback OnPlay { get; set; }
   [Parameter] public EventCallback OnResume { get; set; }
   [Parameter] public EventCallback<GameKind> OnQuick { get; set; }
   /// <summary>Opens a tab by name (Training, Challenges, Statistics, Settings).</summary>
   [Parameter] public EventCallback<string> OnNavigate { get; set; }
 
-  private const int DailyGoal = 60;
+  private const int DailyGoal = DartTaStreaks.DailyGoalDarts;
+  private int StreakCurrent => DailyStreak?.CurrentCount ?? 0;
+  private int StreakLongest => DailyStreak?.LongestCount ?? 0;
+  /// <summary>"safe" (today's goal reached), "risk" (a running streak breaks unless today's goal is reached) or "start".</summary>
+  private string StreakHint => DailyStreak switch
+  {
+    { CurrentCount: > 0, IsCurrentPeriodComplete: true } => "safe",
+    { CurrentCount: > 0, IsAtRisk: true } => "risk",
+    _ => "start"
+  };
   private string GoalShare => Math.Clamp(TodayDarts * 100 / DailyGoal, 0, 100).ToString();
 
   /// <summary>Choice cards: tab, icon, accent (r,g,b – BikeTa colours), title and text resource keys.</summary>

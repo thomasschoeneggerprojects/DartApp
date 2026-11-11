@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DartForge.Localization")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca8779c63201a8c455862bc1ebea8befc454b2b9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e30badc6754db09512200a2b3961a00b428499be")]
 [assembly: System.Reflection.AssemblyProductAttribute("DartForge.Localization")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DartForge.Localization")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -4,31 +4,41 @@ using DartForge.Core.Models;
 namespace DartForge.App.Services;
 public sealed class LocalStore
 {
+    /// <summary>SQLite file with match and training history.</summary>
+    public const string DatabaseFileName = "dartforge.db3";
+    /// <summary>Directory that holds <see cref="DatabaseFileName"/>; other local data (e.g. streaks) is stored next to it.</summary>
+    public static string DataDirectory => FileSystem.AppDataDirectory;
     private readonly SemaphoreSlim _mutex = new(1,1);
     private SQLiteAsyncConnection? _db;
     private async Task<SQLiteAsyncConnection> OpenAsync()
     {
         if (_db != null) return _db;
-        var db = new SQLiteAsyncConnection(Path.Combine(FileSystem.AppDataDirectory, "dartforge.db3"));
+        var db = new SQLiteAsyncConnection(Path.Combine(DataDirectory, DatabaseFileName));
         await db.CreateTableAsync<MatchRecord>();
         await db.CreateTableAsync<TrainingRecord>();
         _db = db; return db;
     }
-    public async Task SaveMatchAsync(GameSnapshot snapshot)
+    /// <summary>Stores a match and returns its record id.</summary>
+    public async Task<int> SaveMatchAsync(GameSnapshot snapshot)
     {
         await _mutex.WaitAsync();
         try
         {
             var db = await OpenAsync();
-            await db.InsertAsync(new MatchRecord { PlayedUtc = DateTimeOffset.UtcNow.ToString("O"), Mode = snapshot.Settings.Kind.ToString(), Winner = snapshot.Players.FirstOrDefault(x=>x.Id == snapshot.WinnerId)?.Name ?? "Unfinished", Json = JsonSerializer.Serialize(snapshot) });
+            var record = new MatchRecord { PlayedUtc = DateTimeOffset.UtcNow.ToString("O"), Mode = snapshot.Settings.Kind.ToString(), Winner = snapshot.Players.FirstOrDefault(x=>x.Id == snapshot.WinnerId)?.Name ?? "Unfinished", Json = JsonSerializer.Serialize(snapshot) };
+            await db.InsertAsync(record);
+            return record.Id;
         }
         finally { _mutex.Release(); }
     }
     public async Task<List<MatchRecord>> MatchesAsync() => await (await OpenAsync()).Table<MatchRecord>().OrderByDescending(x=>x.Id).ToListAsync();
-    public async Task SaveTrainingAsync(string mode, int score, int darts)
+    /// <summary>Stores a training session and returns its record id.</summary>
+    public async Task<int> SaveTrainingAsync(string mode, int score, int darts)
     {
         var db = await OpenAsync();
-        await db.InsertAsync(new TrainingRecord { Mode = mode, Score = score, Darts = darts, PlayedUtc = DateTimeOffset.UtcNow.ToString("O") });
+        var record = new TrainingRecord { Mode = mode, Score = score, Darts = darts, PlayedUtc = DateTimeOffset.UtcNow.ToString("O") };
+        await db.InsertAsync(record);
+        return record.Id;
     }
     public async Task<List<TrainingRecord>> TrainingAsync() => await (await OpenAsync()).Table<TrainingRecord>().OrderByDescending(x=>x.Id).ToListAsync();
 }

@@ -1,0 +1,9 @@
+<Project>
+  <!--
+    Keeps this folder self-contained while it lives inside another repository:
+    if the host repository uses central package management, these projects keep their own package versions.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>

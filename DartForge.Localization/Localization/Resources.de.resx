@@ -468,4 +468,52 @@
   <data name="GameMode_Bob27_Rules" xml:space="preserve">
     <value>Start mit 27. In Runde N ist Doppel N das Ziel (zum Schluss das Bull). Jeder Treffer addiert den Wert des Doppels; verfehlst du mit allen drei Darts, wird er abgezogen. Fällst du auf null oder darunter, bist du raus.</value>
   </data>
+  <data name="Streak_DailyGoal_Name" xml:space="preserve">
+    <value>Tagesziel-Serie</value>
+  </data>
+  <data name="Streak_WeeklyTraining_Name" xml:space="preserve">
+    <value>Wöchentliche Trainingsserie</value>
+  </data>
+  <data name="Streak_MatchWins_Name" xml:space="preserve">
+    <value>Siegesserie</value>
+  </data>
+  <data name="Streak_Days_One" xml:space="preserve">
+    <value>{0} Tag</value>
+  </data>
+  <data name="Streak_Days_Other" xml:space="preserve">
+    <value>{0} Tage</value>
+  </data>
+  <data name="Streak_Weeks_One" xml:space="preserve">
+    <value>{0} Woche</value>
+  </data>
+  <data name="Streak_Weeks_Other" xml:space="preserve">
+    <value>{0} Wochen</value>
+  </data>
+  <data name="Streak_Wins_One" xml:space="preserve">
+    <value>{0} Sieg</value>
+  </data>
+  <data name="Streak_Wins_Other" xml:space="preserve">
+    <value>{0} Siege</value>
+  </data>
+  <data name="Event_StreakMilestone" xml:space="preserve">
+    <value>{0}: {1}! Weiter so.</value>
+  </data>
+  <data name="Event_StreakBroken" xml:space="preserve">
+    <value>{0} beendet – {1} geschafft.</value>
+  </data>
+  <data name="Home_StreakCard_Title" xml:space="preserve">
+    <value>Tagesziel-Serie</value>
+  </data>
+  <data name="Home_StreakCard_Stats" xml:space="preserve">
+    <value>Aktuell: {0} · Rekord: {1}</value>
+  </data>
+  <data name="Home_StreakCard_AtRisk" xml:space="preserve">
+    <value>Serie in Gefahr – heute {0} / {1} Darts</value>
+  </data>
+  <data name="Home_StreakCard_Safe" xml:space="preserve">
+    <value>Ziel erreicht – Serie heute sicher</value>
+  </data>
+  <data name="Home_StreakCard_Start" xml:space="preserve">
+    <value>Wirf {0} Darts an einem Tag für eine Serie</value>
+  </data>
 </root>

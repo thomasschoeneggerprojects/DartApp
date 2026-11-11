@@ -1,0 +1,23 @@
+@using DartForge.Streaks
+@inherits LocalizedComponentBase
+@* Streak notices (milestone reached / streak broken). Stored as LocText like the gameplay notice, so they follow
+   language switches. Tap a notice to dismiss it. *@
+@if (Items.Count > 0)
+{
+  <div class="streak-notices" role="status">
+    @foreach (var item in Items)
+    {
+      var notice = item;
+      var broken = notice.Key == StreakText.BrokenKey;
+      <button class="notice streak-notice @(broken ? "broken" : "")" @onclick="() => OnDismiss.InvokeAsync(notice)">
+        <Icon Name="@(broken ? "refresh" : "flame")" Size="18" />
+        <span>@notice.Resolve(Loc)</span>
+        <Icon Name="close" Size="14" Class="sn-close" />
+      </button>
+    }
+  </div>
+}
+@code {
+  [Parameter] public IReadOnlyList<LocText> Items { get; set; } = [];
+  [Parameter] public EventCallback<LocText> OnDismiss { get; set; }
+}

@@ -492,4 +492,67 @@
   <data name="GameMode_Bob27_Rules" xml:space="preserve">
     <value>Start with 27. Round N targets double N (then the bull). Each hit adds the double's value; missing all three darts subtracts it. Drop to zero or below and you're out.</value>
   </data>
+  <data name="Streak_DailyGoal_Name" xml:space="preserve">
+    <value>Daily goal streak</value>
+    <comment>Streak of days with the daily dart goal reached.</comment>
+  </data>
+  <data name="Streak_WeeklyTraining_Name" xml:space="preserve">
+    <value>Weekly training streak</value>
+    <comment>Streak of weeks with training on at least 3 days.</comment>
+  </data>
+  <data name="Streak_MatchWins_Name" xml:space="preserve">
+    <value>Win streak</value>
+    <comment>Consecutive won matches.</comment>
+  </data>
+  <data name="Streak_Days_One" xml:space="preserve">
+    <value>{0} day</value>
+    <comment>{0} = 1.</comment>
+  </data>
+  <data name="Streak_Days_Other" xml:space="preserve">
+    <value>{0} days</value>
+    <comment>{0} = number of days (not 1).</comment>
+  </data>
+  <data name="Streak_Weeks_One" xml:space="preserve">
+    <value>{0} week</value>
+    <comment>{0} = 1.</comment>
+  </data>
+  <data name="Streak_Weeks_Other" xml:space="preserve">
+    <value>{0} weeks</value>
+    <comment>{0} = number of weeks (not 1).</comment>
+  </data>
+  <data name="Streak_Wins_One" xml:space="preserve">
+    <value>{0} win</value>
+    <comment>{0} = 1.</comment>
+  </data>
+  <data name="Streak_Wins_Other" xml:space="preserve">
+    <value>{0} wins</value>
+    <comment>{0} = number of wins (not 1).</comment>
+  </data>
+  <data name="Event_StreakMilestone" xml:space="preserve">
+    <value>{0}: {1}! Keep it going.</value>
+    <comment>Notice. {0} = streak name, {1} = length with unit (e.g. "7 days").</comment>
+  </data>
+  <data name="Event_StreakBroken" xml:space="preserve">
+    <value>{0} ended after {1}.</value>
+    <comment>Notice. {0} = streak name, {1} = length with unit (e.g. "7 days").</comment>
+  </data>
+  <data name="Home_StreakCard_Title" xml:space="preserve">
+    <value>Daily goal streak</value>
+    <comment>Home card title.</comment>
+  </data>
+  <data name="Home_StreakCard_Stats" xml:space="preserve">
+    <value>Current: {0} · Longest: {1}</value>
+    <comment>{0}/{1} = length with unit (e.g. "7 days").</comment>
+  </data>
+  <data name="Home_StreakCard_AtRisk" xml:space="preserve">
+    <value>Streak at risk – {0} / {1} darts today</value>
+    <comment>{0} = darts thrown today, {1} = daily goal.</comment>
+  </data>
+  <data name="Home_StreakCard_Safe" xml:space="preserve">
+    <value>Goal reached – streak safe today</value>
+  </data>
+  <data name="Home_StreakCard_Start" xml:space="preserve">
+    <value>Throw {0} darts in a day to start a streak</value>
+    <comment>{0} = daily goal.</comment>
+  </data>
 </root>

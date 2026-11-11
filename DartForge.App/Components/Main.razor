@@ -1,13 +1,17 @@
 @using Microsoft.JSInterop
+@using System.Globalization
+@using DartForge.Streaks
+@using SportTA.Streaks
 @inject GameSession Session
 @inject LocalStore Store
 @inject DartBot Bot
 @inject AdState Ads
 @inject IJSRuntime JS
+@inject DartStreakTracker StreakTracker
 @inherits LocalizedComponentBase
 @if (showIntro)
 {
-  <Intro OnReveal="() => introRevealed = true" OnFinished="() => showIntro = false" />
+  <Intro OnReveal="OnIntroReveal" OnFinished="() => showIntro = false" />
 }
 @if (introRevealed)
 {
@@ -26,10 +30,16 @@
   </header>
 }
 <main class="@(tab == "Home" ? "home-main" : "")">
+@if (tab != "Home")
+{
+  <StreakNotices Items="streakNotices" OnDismiss="DismissNotice" />
+}
 @if (tab == "Home")
 {
   <Landing Matches="matchHistory.Count" TrainingDarts="trainingHistory.Sum(x => x.Darts)" TodayDarts="TodayDarts" HitRate="@HitRate" HasActiveMatch="HasActiveMatch"
-           OnPlay="OpenSetup" OnResume="Resume" OnQuick="QuickStart" OnNavigate="Navigate" />
+           DailyStreak="dailyStreak" OnPlay="OpenSetup" OnResume="Resume" OnQuick="QuickStart" OnNavigate="Navigate">
+    <StreakNotices Items="streakNotices" OnDismiss="DismissNotice" />
+  </Landing>
 }
 else if (tab == "Play")
 {
@@ -178,6 +188,11 @@ else
  private string? appliedHtmlLang;
  private GameKind selectedKind=GameKind.X01;
  private List<MatchRecord> matchHistory=new(); private List<TrainingRecord> trainingHistory=new();
+ /// <summary>Daily-goal streak for the home card (null until loaded or if streak storage is unavailable).</summary>
+ private StreakProgress? dailyStreak;
+ /// <summary>Streak milestones / breaks to announce, kept as key + arguments like <see cref="message"/>.</summary>
+ private readonly List<LocText> streakNotices=new();
+ private bool streaksEvaluated;
  protected override async Task OnInitializedAsync()
  {
    AddAutoSlot(new PlayerSlot(), new LocText("Players_DefaultName", 1));
@@ -209,8 +224,8 @@ else
  {
    if (Enum.TryParse<AppLanguage>(e.Value?.ToString(), out var lang)) Loc.SetLanguage(lang);
  }
- private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); }
- private async Task Navigate(string dest) { tab=dest; if(dest is "Statistics" or "Training" or "Challenges" or "Home") await Refresh(); }
+ private async Task Refresh() { matchHistory=await Store.MatchesAsync(); trainingHistory=await Store.TrainingAsync(); await LoadStreaks(); }
+ private async Task Navigate(string dest) { tab=dest; streakNotices.Clear(); if(dest is "Statistics" or "Training" or "Challenges" or "Home") await Refresh(); }
  // Bottom navigation with one accent per tab (BikeTa colours, "r,g,b").
  private static readonly (string Tab, string Icon, string LabelKey, string Accent)[] NavItems = [("Home","home","Nav_Home","78,210,160"),("Play","dart","Nav_Play","242,92,84"),("Training","crosshair","Nav_Training","78,210,160"),("Challenges","star","Nav_Goals","166,107,242"),("Statistics","chart","Nav_Stats","61,155,233")];
  /// <summary>Sub page header (BikeTa PageHeaderView): icon badge in the tab accent, title and one-line description.</summary>
@@ -229,8 +244,31 @@ else
  private string HitRate { get { var d=trainingHistory.Sum(x=>x.Darts); return Loc.FormatPercent(d==0 ? 0 : 100.0*trainingHistory.Sum(x=>x.Score)/d); } }
  private string ExerciseName(string mode) => Exercises.Contains(mode) ? L($"Training_Exercise_{mode}") : mode;
  private string WinnerName(MatchRecord r) => r.Winner == "Unfinished" ? L("Statistics_Unfinished") : r.Winner;
- private void OpenSetup() { tab="Play"; showSetup=true; }
- private void Resume() { tab="Play"; showSetup=false; }
+ private void OpenSetup() { tab="Play"; showSetup=true; streakNotices.Clear(); }
+ private void Resume() { tab="Play"; showSetup=false; streakNotices.Clear(); }
+
+ // ---- Streaks (SportTA.Streaks via DartStreakTracker). Streak problems are logged and never interrupt the app. ----
+ /// <summary>The intro fades out: show the app shell, then settle elapsed streak periods once per app start.</summary>
+ private void OnIntroReveal()
+ {
+   introRevealed=true;
+   if(streaksEvaluated) return;
+   streaksEvaluated=true;
+   // Not awaited, so the intro fade is never held up by file IO.
+   _ = InvokeAsync(async () => { await TrackStreaks(async () => (await StreakTracker.EvaluateAsync()).SelectMany(r => r.Events)); StateHasChanged(); });
+ }
+ private async Task TrackStreaks(Func<Task<IEnumerable<StreakEvent>>> action)
+ {
+   try { streakNotices.AddRange(StreakText.Notices(await action())); }
+   catch(Exception ex) { System.Diagnostics.Debug.WriteLine($"[DartTA streaks] {ex}"); }
+   await LoadStreaks();
+ }
+ private async Task LoadStreaks()
+ {
+   try { dailyStreak=(await StreakTracker.GetAllAsync()).FirstOrDefault(p => p.DefinitionId==DartTaStreaks.DailyGoal); }
+   catch(Exception ex) { System.Diagnostics.Debug.WriteLine($"[DartTA streaks] {ex}"); }
+ }
+ private void DismissNotice(LocText notice) => streakNotices.Remove(notice);
  private void QuickStart(GameKind k) { selectedKind=k; OpenSetup(); }
 
  private GameSettings BuildSettings() => selectedKind switch
@@ -305,9 +343,29 @@ else
    message=new LocText("Gameplay_Redone");
    await SaveIfFinished();
  }
- private async Task SaveIfFinished() { if(Session.Current is not null && Session.Current.Snapshot.IsFinished && !Session.Saved) { await Store.SaveMatchAsync(Session.Current.Snapshot);Session.MarkSaved();await Refresh(); } }
+ private async Task SaveIfFinished()
+ {
+   if(Session.Current is null || !Session.Current.Snapshot.IsFinished || Session.Saved) return;
+   var snap=Session.Current.Snapshot;
+   var matchId=await Store.SaveMatchAsync(snap); Session.MarkSaved();
+   var finishedAt=DateTimeOffset.UtcNow;
+   await Refresh();
+   // Streaks count only matches with a winner and at least one human; every human on this device is a local player.
+   var winner=snap.Players.FirstOrDefault(p => p.Id==snap.WinnerId);
+   if(winner is not null && snap.Players.Any(p => !p.IsBot))
+     await TrackStreaks(async () => await StreakTracker.RecordMatchAsync(matchId.ToString(CultureInfo.InvariantCulture), finishedAt, !winner.IsBot));
+ }
  private void BeginTraining(){trainingActive=true;trainingThrown=trainingHits=0;currentTarget=exercise;}
  private async Task TrainingThrow(bool hit){if(!trainingActive)return;trainingThrown++;if(hit)trainingHits++;if(exercise=="Random")currentTarget=$"T{Random.Shared.Next(1,21)}";if(trainingThrown>=trainingDarts)await EndTraining();}
- private async Task EndTraining(){if(!trainingActive)return;trainingActive=false;await Store.SaveTrainingAsync(exercise,trainingHits,trainingThrown);await Refresh();}
+ private async Task EndTraining()
+ {
+   if(!trainingActive) return;
+   trainingActive=false;
+   var darts=trainingThrown;
+   var sessionId=await Store.SaveTrainingAsync(exercise,trainingHits,darts);
+   var finishedAt=DateTimeOffset.UtcNow;
+   await Refresh();   // TodayDarts now includes this session (same total as the home goal ring)
+   if(darts>0) await TrackStreaks(async () => await StreakTracker.RecordTrainingAsync(sessionId.ToString(CultureInfo.InvariantCulture), finishedAt, darts, TodayDarts));
+ }
  private static string ModeIconName(string mode)=>Enum.TryParse(mode, out GameKind k) ? Icon.ForGame(k) : "target";
 }

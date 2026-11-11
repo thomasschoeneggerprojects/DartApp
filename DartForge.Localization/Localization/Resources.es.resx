@@ -468,4 +468,52 @@
   <data name="GameMode_Bob27_Rules" xml:space="preserve">
     <value>Empiezas con 27. En la ronda N el objetivo es el doble N (y al final la diana). Cada acierto suma el valor del doble; fallar los tres dardos lo resta. Si llegas a cero o menos, quedas eliminado.</value>
   </data>
+  <data name="Streak_DailyGoal_Name" xml:space="preserve">
+    <value>Racha de objetivo diario</value>
+  </data>
+  <data name="Streak_WeeklyTraining_Name" xml:space="preserve">
+    <value>Racha de entrenamiento semanal</value>
+  </data>
+  <data name="Streak_MatchWins_Name" xml:space="preserve">
+    <value>Racha de victorias</value>
+  </data>
+  <data name="Streak_Days_One" xml:space="preserve">
+    <value>{0} día</value>
+  </data>
+  <data name="Streak_Days_Other" xml:space="preserve">
+    <value>{0} días</value>
+  </data>
+  <data name="Streak_Weeks_One" xml:space="preserve">
+    <value>{0} semana</value>
+  </data>
+  <data name="Streak_Weeks_Other" xml:space="preserve">
+    <value>{0} semanas</value>
+  </data>
+  <data name="Streak_Wins_One" xml:space="preserve">
+    <value>{0} victoria</value>
+  </data>
+  <data name="Streak_Wins_Other" xml:space="preserve">
+    <value>{0} victorias</value>
+  </data>
+  <data name="Event_StreakMilestone" xml:space="preserve">
+    <value>{0}: ¡{1}! Sigue así.</value>
+  </data>
+  <data name="Event_StreakBroken" xml:space="preserve">
+    <value>{0} terminada tras {1}.</value>
+  </data>
+  <data name="Home_StreakCard_Title" xml:space="preserve">
+    <value>Racha de objetivo diario</value>
+  </data>
+  <data name="Home_StreakCard_Stats" xml:space="preserve">
+    <value>Actual: {0} · Récord: {1}</value>
+  </data>
+  <data name="Home_StreakCard_AtRisk" xml:space="preserve">
+    <value>Racha en peligro: {0} / {1} dardos hoy</value>
+  </data>
+  <data name="Home_StreakCard_Safe" xml:space="preserve">
+    <value>Objetivo cumplido: racha a salvo hoy</value>
+  </data>
+  <data name="Home_StreakCard_Start" xml:space="preserve">
+    <value>Lanza {0} dardos en un día para empezar una racha</value>
+  </data>
 </root>

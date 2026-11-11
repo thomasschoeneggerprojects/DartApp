@@ -487,3 +487,40 @@ public sealed class LocalizationGameRegressionTests
         Assert.Equal(25, g.Snapshot.Players[0].Score);
     }
 }
+
+public sealed class StreakLocalizationTests
+{
+    /// <summary>Keys used by the app's streak card and notices (DartForge.App/Streaks/StreakText.cs, Landing.razor).</summary>
+    public static IEnumerable<object[]> StreakKeys =>
+        new[]
+        {
+            "Streak_DailyGoal_Name", "Streak_WeeklyTraining_Name", "Streak_MatchWins_Name",
+            "Streak_Days_One", "Streak_Days_Other", "Streak_Weeks_One", "Streak_Weeks_Other", "Streak_Wins_One", "Streak_Wins_Other",
+            "Event_StreakMilestone", "Event_StreakBroken",
+            "Home_StreakCard_Title", "Home_StreakCard_Stats", "Home_StreakCard_AtRisk", "Home_StreakCard_Safe", "Home_StreakCard_Start",
+        }.Select(k => new object[] { k });
+
+    [Theory, MemberData(nameof(StreakKeys))]
+    public void StreakKeyIsTranslatedInEveryLanguage(string key)
+    {
+        foreach (var lang in SupportedLanguages.All)
+        {
+            var loc = new LocalizationService(new InMemoryLanguagePreferenceStore(lang.Language), new FixedSystemCulture("en-US"));
+            Assert.NotEqual(key, loc.GetString(key));
+        }
+    }
+
+    [Fact]
+    public void StreakNoticeIsReRenderedInNewLanguage()
+    {
+        var loc = new LocalizationService(new InMemoryLanguagePreferenceStore(), new FixedSystemCulture("en-US"));
+        // As StreakText builds it: name and count are nested LocText values.
+        var notice = new LocText("Event_StreakMilestone", new LocText("Streak_DailyGoal_Name"), new LocText("Streak_Days_Other", 7));
+        Assert.Equal("Daily goal streak: 7 days! Keep it going.", notice.Resolve(loc));
+        loc.SetLanguage(AppLanguage.German);
+        Assert.Equal("Tagesziel-Serie: 7 Tage! Weiter so.", notice.Resolve(loc));
+        loc.SetLanguage(AppLanguage.Spanish);
+        Assert.Equal("Racha de victorias terminada tras 1 victoria.",
+            new LocText("Event_StreakBroken", new LocText("Streak_MatchWins_Name"), new LocText("Streak_Wins_One", 1)).Resolve(loc));
+    }
+}

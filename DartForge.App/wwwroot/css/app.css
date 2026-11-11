@@ -371,3 +371,17 @@ nav small{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-o
 .lang-label .ico{color:#4ed2a0}
 .lang-select{flex:1 1 180px;min-width:0}
 .lang-detected{margin:4px 0 10px;font-size:12px}
+
+/* ---- Streaks: home card (gold choice card) and milestone / broken notices ---- */
+.choice.streak .ch-text small.sc-hint{display:flex;align-items:center;gap:5px;margin-top:2px;font-weight:600;color:#9eacb8}
+.choice.streak .sc-hint.risk{color:rgb(var(--acc))}
+.choice.streak .sc-hint.safe{color:#4ed2a0}
+.choice.streak .sc-hint .ico{flex:none}
+.streak-notices{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+.home-cards .streak-notices{margin:0}
+.streak-notice{--acc:242,193,78;width:100%;display:flex;align-items:center;gap:10px;padding:11px 12px 11px 14px;border-radius:14px;text-align:left;
+  font-size:14px;font-weight:600;color:#f3f6f8;background:rgba(var(--acc),.14);box-shadow:inset 0 0 0 1.5px rgba(var(--acc),.5)}
+.streak-notice.broken{--acc:158,172,184}
+.streak-notice>.ico{flex:none;color:rgb(var(--acc))}
+.streak-notice>span{flex:1;min-width:0;overflow-wrap:anywhere;hyphens:auto}
+.streak-notice .sn-close{color:#9eacb8}

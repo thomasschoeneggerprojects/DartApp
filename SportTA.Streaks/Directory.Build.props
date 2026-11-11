@@ -1,0 +1,10 @@
+<Project>
+  <!-- Intentionally does not import a parent Directory.Build.props: this folder must build the same inside DartTA and standalone. -->
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  </PropertyGroup>
+</Project>
