@@ -16,3 +16,14 @@
 *.keystore
 *.p12
 *.jks
+/Sta.DataSync/src/Sta.DataSync.Abstractions/obj
+/Sta.DataSync/src/Sta.DataSync.Core/bin/Debug/net8.0
+/Sta.DataSync/src/Sta.DataSync.Core/obj
+/Sta.DataSync/src/Sta.DataSync.Providers.GoogleDrive/bin/Debug/net8.0
+/Sta.DataSync/src/Sta.DataSync.Providers.GoogleDrive/obj
+/Sta.DataSync/src/Sta.DataSync.Sources/bin/Debug/net8.0
+/Sta.DataSync/src/Sta.DataSync.Sources/obj
+/Sta.DataSync/src/Sta.DataSync.Storage/bin/Debug/net8.0
+/Sta.DataSync/src/Sta.DataSync.Storage/obj
+/Sta.DataSync/tests/Sta.DataSync.Core.Tests/bin/Debug/net8.0
+/Sta.DataSync/tests/Sta.DataSync.Core.Tests/obj
