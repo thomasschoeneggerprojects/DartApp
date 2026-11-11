@@ -24,10 +24,11 @@ if ($Run) {
     }
 
     $adbArguments = if ($Device) { @('-s', $Device) } else { @() }
-    $abi = (& $adb @adbArguments shell getprop ro.product.cpu.abi).Trim()
-    if ($LASTEXITCODE -ne 0 -or -not $abi) {
-        throw 'No Android device is available. Connect one and enable USB debugging.'
+    $abiOutput = & $adb @adbArguments shell getprop ro.product.cpu.abi
+    if ($LASTEXITCODE -ne 0 -or -not $abiOutput) {
+        throw 'The Android device is unavailable or unauthorized. Connect it, enable USB debugging, and accept the authorization prompt.'
     }
+    $abi = ($abiOutput | Out-String).Trim()
 
     $RuntimeIdentifier = switch ($abi) {
         'arm64-v8a'   { 'android-arm64' }

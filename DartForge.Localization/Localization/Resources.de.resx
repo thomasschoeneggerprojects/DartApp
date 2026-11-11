@@ -516,4 +516,13 @@
   <data name="Home_StreakCard_Start" xml:space="preserve">
     <value>Wirf {0} Darts an einem Tag für eine Serie</value>
   </data>
+  <data name="Celebration_Title_Record" xml:space="preserve">
+    <value>NEUER REKORD!</value>
+  </data>
+  <data name="Celebration_Title_Milestone" xml:space="preserve">
+    <value>MEILENSTEIN!</value>
+  </data>
+  <data name="Celebration_Title_Normal" xml:space="preserve">
+    <value>SERIE VERLÄNGERT!</value>
+  </data>
 </root>

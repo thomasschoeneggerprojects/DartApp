@@ -516,4 +516,13 @@
   <data name="Home_StreakCard_Start" xml:space="preserve">
     <value>Lanza {0} dardos en un día para empezar una racha</value>
   </data>
+  <data name="Celebration_Title_Record" xml:space="preserve">
+    <value>¡NUEVO RÉCORD!</value>
+  </data>
+  <data name="Celebration_Title_Milestone" xml:space="preserve">
+    <value>¡HITO!</value>
+  </data>
+  <data name="Celebration_Title_Normal" xml:space="preserve">
+    <value>¡RACHA AMPLIADA!</value>
+  </data>
 </root>

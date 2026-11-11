@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  Reusable celebration overlay. Place it as the last child of a Grid that also holds the page content, so it is drawn
+  on top. It registers itself with the celebration service when loaded and stays hidden while idle, so it never blocks
+  input then. Leave its InputTransparent at the default; the control switches input on its inner layout.
+-->
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="StreakCelebration.Controls.StreakCelebrationOverlay"
+             IsVisible="False">
+  <!-- Input is switched here (not on the ContentView): see StreakCelebrationOverlay.Prepare. -->
+  <Grid x:Name="Root" IgnoreSafeArea="True" InputTransparent="True">
+    <Grid.GestureRecognizers>
+      <TapGestureRecognizer Tapped="OnTapped" />
+    </Grid.GestureRecognizers>
+
+    <BoxView x:Name="Backdrop" Opacity="0" />
+
+    <GraphicsView x:Name="ParticleCanvas" InputTransparent="True" />
+
+    <!-- Respects safe areas (notch, home indicator) while the backdrop above covers the whole screen. -->
+    <Grid x:Name="SafeArea" IgnoreSafeArea="False" Padding="24" InputTransparent="True" CascadeInputTransparent="True">
+      <Grid x:Name="Stage" Opacity="0" RowDefinitions="Auto,Auto" HorizontalOptions="Center" VerticalOptions="Center">
+        <Border x:Name="Card" Grid.Row="1" StrokeThickness="0" HorizontalOptions="Center">
+          <Border.StrokeShape>
+            <RoundRectangle CornerRadius="28" />
+          </Border.StrokeShape>
+          <VerticalStackLayout x:Name="TextStack" Spacing="2">
+            <Label x:Name="CountLabel" HorizontalTextAlignment="Center" FontAttributes="Bold" />
+            <Label x:Name="TitleLabel" HorizontalTextAlignment="Center" FontAttributes="Bold" LineBreakMode="WordWrap" Opacity="0" />
+            <Label x:Name="MessageLabel" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" Opacity="0" />
+          </VerticalStackLayout>
+        </Border>
+
+        <Grid x:Name="IconHost" Grid.Row="0" HorizontalOptions="Center" ZIndex="1">
+          <GraphicsView x:Name="IconCanvas" />
+          <Image x:Name="IconImage" IsVisible="False" Aspect="AspectFit" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</ContentView>

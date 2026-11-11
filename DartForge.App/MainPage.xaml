@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:DartForge.App.Components" xmlns:controls="clr-namespace:DartForge.App.Controls"
+             xmlns:celebration="clr-namespace:StreakCelebration.Controls;assembly=StreakCelebration.Maui"
              x:Class="DartForge.App.MainPage" BackgroundColor="#0E151D">
   <Grid RowDefinitions="*,Auto">
     <BlazorWebView Grid.Row="0" HostPage="wwwroot/index.html">
       <BlazorWebView.RootComponents><RootComponent Selector="#app" ComponentType="{x:Type local:Main}" /></BlazorWebView.RootComponents>
     </BlazorWebView>
+    <!-- Streak celebrations, drawn above the Blazor UI (not over the ad banner). Hidden while idle, so it never blocks
+         input then; it registers itself with IStreakCelebrationService when loaded. -->
+    <celebration:StreakCelebrationOverlay Grid.Row="0" />
     <!-- Shared AdMob banner: shown at the bottom of every app screen once loaded. -->
     <controls:AdBanner x:Name="Banner" Grid.Row="1" HeightRequest="0" BackgroundColor="#0E151D" />
   </Grid>

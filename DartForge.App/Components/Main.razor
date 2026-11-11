@@ -259,7 +259,8 @@ else
  }
  private async Task TrackStreaks(Func<Task<IEnumerable<StreakEvent>>> action)
  {
-   try { streakNotices.AddRange(StreakText.Notices(await action())); }
+   // Milestones are celebrated by the overlay (DartTaCelebrationHandler); only broken streaks become banner notices.
+   try { streakNotices.AddRange(StreakText.Notices((await action()).Where(e => e.Type==StreakEventType.Broken))); }
    catch(Exception ex) { System.Diagnostics.Debug.WriteLine($"[DartTA streaks] {ex}"); }
    await LoadStreaks();
  }

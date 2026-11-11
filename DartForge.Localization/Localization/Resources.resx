@@ -555,4 +555,16 @@
     <value>Throw {0} darts in a day to start a streak</value>
     <comment>{0} = daily goal.</comment>
   </data>
+  <data name="Celebration_Title_Record" xml:space="preserve">
+    <value>NEW RECORD!</value>
+    <comment>Streak celebration overlay headline: a streak milestone reached for the first time ever. Shown in capitals.</comment>
+  </data>
+  <data name="Celebration_Title_Milestone" xml:space="preserve">
+    <value>MILESTONE!</value>
+    <comment>Streak celebration overlay headline: a streak milestone reached again in a new run. Shown in capitals.</comment>
+  </data>
+  <data name="Celebration_Title_Normal" xml:space="preserve">
+    <value>STREAK EXTENDED!</value>
+    <comment>Streak celebration overlay headline: a streak grew by one (no milestone). Shown in capitals.</comment>
+  </data>
 </root>

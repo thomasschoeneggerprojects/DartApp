@@ -498,6 +498,8 @@ public sealed class StreakLocalizationTests
             "Streak_Days_One", "Streak_Days_Other", "Streak_Weeks_One", "Streak_Weeks_Other", "Streak_Wins_One", "Streak_Wins_Other",
             "Event_StreakMilestone", "Event_StreakBroken",
             "Home_StreakCard_Title", "Home_StreakCard_Stats", "Home_StreakCard_AtRisk", "Home_StreakCard_Safe", "Home_StreakCard_Start",
+            // Celebration overlay headlines (DartForge.App/Streaks/StreakCelebrations.cs).
+            "Celebration_Title_Record", "Celebration_Title_Milestone", "Celebration_Title_Normal",
         }.Select(k => new object[] { k });
 
     [Theory, MemberData(nameof(StreakKeys))]
