@@ -9,8 +9,8 @@ namespace DartForge.App.Ads;
 /// </summary>
 public static class AdConfig
 {
-    /// <summary>Google test app id (must match AndroidManifest.xml).</summary>
-    public const string AppId = "ca-app-pub-3940256099942544~3347511713";
+    /// <summary>AdMob app id (must match AndroidManifest.xml).</summary>
+    public const string AppId = "ca-app-pub-3964073132044809~2715564069";
 
     /// <summary>Google test adaptive-banner unit id.</summary>
     public const string BannerUnitId = "ca-app-pub-3940256099942544/9214589741";
