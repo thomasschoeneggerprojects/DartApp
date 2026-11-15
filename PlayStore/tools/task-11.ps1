@@ -26,7 +26,7 @@ Start-Sleep 10
 & $adb shell am broadcast -a com.android.systemui.demo -e command network -e wifi show -e level 4 | Out-Null
 & $adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false | Out-Null
 cmd /c "`"$adb`" exec-out screencap -p > `"$shots\g-home.png`""
-& $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null
+& $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null
 Start-Sleep 15
 cmd /c "`"$adb`" exec-out screencap -p > `"$shots\g-app.png`""
 Write-Host "== end $(Get-Date)"

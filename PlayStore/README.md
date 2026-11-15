@@ -1,6 +1,6 @@
 # DartTA – Google Play publishing kit
 
-Everything needed to create the store entry for **DartTA** (`com.dartforge.app`, version 1.0.0 / code 1).
+Everything needed to create the store entry for **DartTA** (`com.sta.dartta`, version 1.0.0 / code 1).
 
 | Folder | Content |
 |---|---|
@@ -51,5 +51,5 @@ Rebuild later with `.\build-release.ps1 -VersionName 1.0.1 -VersionCode 2` (the 
 
 ## Verified
 - AAB and APK signed with the upload key (CN=DartTA, valid until 2054; SHA-256 `4E:15:9D:AC:6C:61:79:66:72:33:BB:45:30:97:22:CF:53:1E:7F:5C:12:A6:94:3A:AA:10:59:C9:19:57:81:2C`), APK has v2/v3 signature.
-- Manifest: `com.dartforge.app`, versionCode 1, versionName 1.0.0, minSdk 24, targetSdk 36, not debuggable, AD_ID permission declared.
+- Manifest: `com.sta.dartta`, versionCode 1, versionName 1.0.0, minSdk 24, targetSdk 36, not debuggable, AD_ID permission declared.
 - Release APK installed and played on the Android 14 emulator (X01 vs DartBot, Cricket, training) in English, German and Spanish – no crashes.

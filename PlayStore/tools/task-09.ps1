@@ -27,10 +27,10 @@ Write-Host "booted after ~$($i*2)s"
 & $adb shell am broadcast -a com.android.systemui.demo -e command battery -e level 100 -e plugged false | Out-Null
 & $adb shell am broadcast -a com.android.systemui.demo -e command network -e wifi show -e level 4 | Out-Null
 & $adb shell am broadcast -a com.android.systemui.demo -e command notifications -e visible false | Out-Null
-& $adb uninstall com.dartforge.app 2>&1 | ForEach-Object { "$_" }
+& $adb uninstall com.sta.dartta 2>&1 | ForEach-Object { "$_" }
 & $adb install -r $apk.FullName 2>&1 | ForEach-Object { "$_" }
-& $adb shell cmd locale set-app-locales com.dartforge.app --locales en-US 2>&1 | ForEach-Object { "$_" }
-& $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 | Out-Null
+& $adb shell cmd locale set-app-locales com.sta.dartta --locales en-US 2>&1 | ForEach-Object { "$_" }
+& $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 | Out-Null
 Start-Sleep 12
 cmd /c "`"$adb`" exec-out screencap -p > `"$shots\probe-01.png`""
 Start-Sleep 5

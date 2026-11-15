@@ -25,7 +25,7 @@ Start-Sleep 20
 Write-Host "setup done $(Get-Date)"
 function Shot($n) { Start-Sleep -Milliseconds 1500; & $adb emu screenrecord screenshot "$shots\$n.png" | Out-Null; Write-Host "shot $n" }
 function Tap($x,$y) { & $adb shell input tap $x $y; Start-Sleep -Milliseconds 1500 }
-& $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 | Out-Null
+& $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 | Out-Null
 Start-Sleep 20
 Shot 'u-01-home'
 Tap 328 1767; Shot 'u-02-play'

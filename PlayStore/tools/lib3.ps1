@@ -24,4 +24,4 @@ function WaitHome { Add-Type -AssemblyName System.Drawing; $tmp = Join-Path $sho
     $b = [System.Drawing.Bitmap]::FromFile($tmp); $p = $b.GetPixel(60, 1600); $b.Dispose()
     if ((($p.R + $p.G + $p.B) / 3) -lt 90) { break }; Start-Sleep 2 }
   Remove-Item $tmp -ErrorAction SilentlyContinue; Start-Sleep 2; Write-Host "home ready (~$($i*3)s)" }
-function Relaunch { & $adb shell am force-stop com.dartforge.app; & $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null; WaitHome }
+function Relaunch { & $adb shell am force-stop com.sta.dartta; & $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null; WaitHome }

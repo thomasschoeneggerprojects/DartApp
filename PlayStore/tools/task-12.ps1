@@ -6,8 +6,8 @@ $shots = Join-Path $root 'PlayStore\screenshots\raw'
 function Shot($n) { Start-Sleep -Milliseconds 1500; & $adb emu screenrecord screenshot "$shots\$n.png" | Out-Null; Write-Host "shot $n" }
 function Tap($x,$y) { & $adb shell input tap $x $y; Start-Sleep -Milliseconds 1200 }
 for ($i=0; $i -lt 60; $i++) { if ((& $adb shell getprop sys.boot_completed) -match '1') { break }; Start-Sleep 2 }
-& $adb shell am force-stop com.dartforge.app
-& $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 | Out-Null
+& $adb shell am force-stop com.sta.dartta
+& $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 | Out-Null
 Start-Sleep 14
 Shot 't-01-home'
 Tap 328 1767; Shot 't-02-play'

@@ -59,11 +59,11 @@ if (-not $Run) {
     exit 0
 }
 
-$apk = Join-Path $PSScriptRoot "DartForge.App\bin\Debug\net9.0-android\$RuntimeIdentifier\com.dartforge.app-Signed.apk"
+$apk = Join-Path $PSScriptRoot "DartForge.App\bin\Debug\net9.0-android\$RuntimeIdentifier\com.sta.dartta-Signed.apk"
 & $adb @adbArguments install -r --no-incremental $apk
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-& $adb @adbArguments shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1
+& $adb @adbArguments shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1
 exit $LASTEXITCODE

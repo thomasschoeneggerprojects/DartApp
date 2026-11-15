@@ -5,9 +5,9 @@ function Dart($mult, $num) { if ($mult) { TapText $mult | Out-Null }; TapText $n
 function Slow($x,$y) { & $adb shell input tap $x $y; Start-Sleep -Milliseconds 1600 }
 function Capture($lang, $locale) {
   Write-Host "--- $lang ($locale) $(Get-Date -Format HH:mm:ss)"
-  & $adb shell cmd locale set-app-locales com.dartforge.app --locales $locale 2>&1 | Out-Null
-  & $adb shell am force-stop com.dartforge.app
-  & $adb shell monkey -p com.dartforge.app -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null
+  & $adb shell cmd locale set-app-locales com.sta.dartta --locales $locale 2>&1 | Out-Null
+  & $adb shell am force-stop com.sta.dartta
+  & $adb shell monkey -p com.sta.dartta -c android.intent.category.LAUNCHER 1 2>&1 | Out-Null
   Start-Sleep 40
   Shot "$lang-01-home"
   Slow 328 1767; SwipeDown; SwipeDown

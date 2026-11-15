@@ -64,7 +64,7 @@ public static class MauiProgram
 
     /// <summary>
     /// Cloud backup and sync (Sta.DataSync): the match and training history goes to the user's Google Drive app data
-    /// folder. Sign-in uses Google Identity Services, which needs an "Android" OAuth client for com.dartforge.app with the
+    /// folder. Sign-in uses Google Identity Services, which needs an "Android" OAuth client for com.sta.dartta with the
     /// signing certificate SHA-1s in Google Cloud (no client id or secret in the app). Sync metadata lives in its own
     /// database next to dartforge.db3.
     /// </summary>
